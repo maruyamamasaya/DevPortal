@@ -1,53 +1,39 @@
 # Testing
 
-プロジェクトの検証方針と、確立済みコマンドの正本です。Starterでは技術スタックが未定のため、実在しないコマンドを記載しません。決定後、「変更タイプ → 必要な検証」の対応を整理してください。実行可能になったら短時間の**Fast Validation**と網羅的な**Full Validation**を分けます。
-
 ## Testing Strategy
 
-未定。
+設定境界をUnit testし、静的検査とproduction buildでServer / Client境界とRoute Handlerを検証する。実際のlocal app状態はbrowserで手動確認する。
 
 ## Validation Matrix
 
 | 変更タイプ | 必要な検証 |
 | --- | --- |
-| 未定 | 技術スタック決定後に定義 |
+| app設定・検証 | Unit test、typecheck |
+| status checker・API | Unit test、typecheck、build、manual verification |
+| UI・CSS | lint、typecheck、build、browser verification |
+| 起動script | Windowsでの手動起動 |
 
 ## Fast Validation
 
-未定。
+```bash
+npm run lint
+npm run typecheck
+npm test
+```
 
 ## Full Validation
 
-未定。
-
-## Lint
-
-未定。
-
-## Format Check
-
-未定。
-
-## Typecheck
-
-未定。
-
-## Unit Test
-
-未定。
-
-## Integration Test
-
-未定。
-
-## E2E
-
-未定。
-
-## Build
-
-未定。
+```bash
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```
 
 ## Manual Verification
 
-文書間リンク、正本との整合、プロジェクト固有の受け入れ条件を確認する。具体的手順は初期化後に定義する。
+- `http://127.0.0.1:8790`が表示される。
+- Running / Stopped、summary、使用中portが整合する。
+- 15秒以内の自動更新と手動Refreshが動く。
+- 検索、category filter、Open、GitHubのenabled状態を確認する。
+- light / dark、desktop / narrow viewportで読みやすい。

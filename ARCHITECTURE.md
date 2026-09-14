@@ -1,33 +1,43 @@
 # Architecture
 
-現在採用しているシステム構造の正本です。責務、境界、主要なデータフロー、外部依存、配置と制約を書きます。業務ルール、永続化の詳細、候補技術の調査記録、将来案はそれぞれの正本へ記録します。
-
-Starterではアーキテクチャを決定しません。技術スタックの決定後に更新してください。詳細がこの文書の簡潔さを損なう場合だけ`docs/architecture/`を作り、ここは全体要約と索引に保ちます。
-
 ## System Overview
 
-未定。
+ローカルPC上で動作する単一のNext.js application。App DefinitionをJSONから読み込み、Node.js側で各loopback portへのTCP接続可否を確認し、serializableなstatusだけをClient Componentへ渡す。
 
 ## Technology Stack
 
-未定。
+- Next.js 16 / React 19 / TypeScript
+- App Router / Server Components / Route Handler
+- CSS（追加UI frameworkなし）
+- Node.js `net` module
+- Vitest / ESLint
 
 ## Major Components
 
-未定。
+- `config/apps.json`: 人が編集するアプリ定義。
+- `src/lib/apps/validate.ts`: 設定値の境界検証。
+- `src/lib/apps/status-checker.ts`: TCP port status checker。
+- `src/app/api/apps/status/route.ts`: UIの定期更新用read-only endpoint。
+- `src/components/dev-hub.tsx`: 検索、filter、status更新、カード表示。
 
 ## Data Flow
 
-未定。
+1. Server Componentが`apps.json`を読み込み検証する。
+2. status checkerが全アプリのportへ並列接続する。
+3. 初期HTMLへアプリ定義とstatusを渡す。
+4. Client Componentが15秒ごと、または手動操作時にstatus endpointを呼ぶ。
+5. endpointがその時点のstatusを再確認して返す。
 
 ## External Services
 
-未定。
+なし。GitHub URLはブラウザで開くリンクとしてのみ扱い、GitHub APIは呼ばない。
 
 ## Deployment
 
-未定。
+Windows上のNode.js processとして`127.0.0.1:8790`でローカル実行する。
 
 ## Key Constraints
 
-未定。
+- Status check対象はloopback hostだけに限定する。
+- v1は閲覧と遷移だけを担い、OS processやGit Repositoryを変更しない。
+- DB、認証、Docker、外部APIを使わない。

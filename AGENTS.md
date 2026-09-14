@@ -1,16 +1,13 @@
 # AI Agent Guide
 
-## このStarterの目的
-
-このRepositoryは、AIと人間が新規プロジェクトを一貫した方法で進めるための再利用可能な土台です。Starter状態にアプリケーションコードや確定済み技術スタックはありません。コピー後、実装前にプロジェクト固有情報を各正本へ初期化してください。
-
 ## Project Context
 
-- **Project Name**: AI-driven Development Starter（Repository: `AI-Project-Seed`）
-- **Purpose**: AIエージェントと人間が、要件整理、設計、実装、レビュー、検証を一貫した方法で開始するための、再利用可能なStarter Repositoryを提供する。
-- **Primary Stack**: 技術スタック非依存。Starter状態ではアプリケーションコード、フレームワーク、依存関係、データベースを採用していない。
-- **Main Domains**: AI支援開発フロー、プロジェクト初期化、正本ドキュメント、ADR、チェックリスト、workflow、Progressive Documentation。
-- **Expected Work**: StarterのAI向けルールやテンプレートの改善、正本間の整合維持、再利用性の改善、およびコピー後の明示的なプロジェクト初期化。新しい技術や機能領域の導入は、それだけで無関係とは判断せず、初期化またはStarter拡張として妥当か確認する。
+- **Project Name**: Local Dev Hub
+- **Purpose**: ローカル開発環境の玄関口として、登録アプリの状態を確認し、目的のアプリを開く。
+- **Primary Stack**: Next.js 16 / React 19 / TypeScript / App Router / Node.js TCP status check。
+- **Main Domains**: App Definition、Runtime Status、category、local URL、port。
+- **Expected Work**: v1の一覧・状態確認・検索・遷移、および正本との整合維持。v2以降はRoadmap順に追加する。
+- **Out of Scope for v1**: process操作、ログ、Git status/log、自動Git操作、DB、認証、外部API、クラウド同期、Docker。
 - **Clearly Unrelated Examples**: このRepositoryに存在しない別製品名、別製品固有の画面・クラス・DB・ファイルパスを複数前提にした修正、または別Repository内の実装をこのRepositoryの既存機能であるかのように変更する要求。
 
 ## Project Context Guard
@@ -96,3 +93,13 @@ SQLite、React、API、Docker、Python、Swift、databaseなどの一般的な�
 ## Documentation Hygiene
 
 巨大な`AGENTS.md`/`CURRENT.md`、全ファイル一覧型CODEMAP、READMEへの全情報集約、無制限のAI作業ログ、説明の複製、コードの大量貼り付け、Git履歴で分かる情報の再記録を避けます。古い調査文書を正本として扱わず、習慣的な追記で文書を肥大化させません。詳細は正本へ集約し、他文書はリンクします。
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

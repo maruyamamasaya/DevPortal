@@ -1,19 +1,26 @@
 # Roadmap
 
-開発の方向と優先順位を共有する正本です。細かな作業、担当、日々の進捗を管理するタスク一覧にはしません。
+## Now — v1
 
-## Now
+- 登録アプリを見る。
+- Running / Stoppedを確認する。
+- 起動中アプリとGitHub Repositoryを開く。
+- 名前検索とcategory filterを使う。
 
-- プロジェクトの目的と初期設計を定義し、人間の合意を得る。
+## Next — v2
 
-## Next
-
-- 初期化後に定義する。
+- 明示的な設定と安全境界を設計したうえでStart / Stop / Restartを追加する。
 
 ## Later
 
-- 必要になった段階で定義する。
+- v3: 簡易ログ。
+- v4: Git Status。
+- v5: Recent Commits。
 
-## Deferred / Won't Do
+## Deferred / Won't Do in v1
 
-- 未定。理由が将来重要になる場合はADRへリンクする。
+- process start / stop / kill。
+- log streaming。
+- Git status / log / 自動操作。
+- DB、認証、ユーザー管理、クラウド同期。
+- Docker、Kubernetes、CPU / RAM監視。

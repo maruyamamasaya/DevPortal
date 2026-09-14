@@ -1,43 +1,102 @@
-# AI-driven Development Starter
+# Local Dev Hub
 
-AIエージェントと人間が、要件整理・設計・実装・レビュー・検証を一貫した方法で始めるための、技術スタック非依存のStarter Repositoryです。現時点ではプロジェクト固有の仕様やアプリケーションコードはありません。
+## Local Dev Hubとは
 
-## 含まれるもの
+複数のローカル開発アプリをまとめて確認し、起動中のアプリやGitHub Repositoryへ移動するための、ローカル開発環境の玄関口です。DB・認証・外部サービスを使わず、ローカルだけで動作します。
 
-- 現在地、設計、ドメイン、データ、優先順位、テスト、セキュリティの正本テンプレート
-- 重要な設計判断を残すADR領域
-- AI向けの短いworkflow、完了checklist、必要時に使うtemplate
-- Progressive Documentation（必要になった時だけ文書を増やす）のルール
+## v1
 
-## 含まれないもの
+```text
+見る
+↓
+状態確認
+↓
+開く
+```
 
-実装、技術スタック、依存関係、DB migration、CI/CD、コンテナ、デプロイ設定、実装用のfrontend/backend構成は意図的に含めていません。CODEMAP、階層型AGENTS、統合verify script、sessionsも必要になるまで作りません。
+- `config/apps.json`からのアプリ一覧読み込み
+- Node.jsサーバーから各アプリのTCPポートを確認
+- Running / Stoppedを15秒ごとに自動更新
+- 手動Refresh、名前検索、カテゴリフィルター
+- RunningアプリとGitHub Repositoryを新しいタブで開く
+- OS設定に合わせたライト／ダーク表示
 
-## コピー直後に行うこと
+## 必要環境
 
-1. プロジェクトの目的と対象範囲を定義する。
-2. [DOMAIN.md](DOMAIN.md)を初期化する。
-3. [ARCHITECTURE.md](ARCHITECTURE.md)を初期化する。
-4. 永続化が必要なら[DATA_MODEL.md](DATA_MODEL.md)を初期化し、不要なら`Not applicable`と記録する。
-5. [SECURITY.md](SECURITY.md)を初期化する。
-6. [ROADMAP.md](ROADMAP.md)に最初のPhaseを作る。
-7. [CURRENT.md](CURRENT.md)に現在地を記録する。
-8. 人間が内容と未決事項をレビューする。
-9. 合意後に初めて実装を始める。
+- Windows
+- Node.js 20.9以降
+- npm
 
-## 推奨開発フロー
+## セットアップ
 
-要求を明確化し、正本を確認・更新して合意を得た後、検索で変更対象を絞り、最小変更を実装します。関連する検証とレビューを行い、実装と正本を同期してください。AI向けの詳細ルールは[AGENTS.md](AGENTS.md)を参照してください。
+```bash
+npm install
+```
 
-## 主要ドキュメント
+`config/apps.json`を編集してローカルアプリを登録します。
 
-| 文書 | 役割 |
-| --- | --- |
-| [CURRENT.md](CURRENT.md) | 現在地 |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | 現在のシステム構造 |
-| [DOMAIN.md](DOMAIN.md) | 業務概念とルール |
-| [DATA_MODEL.md](DATA_MODEL.md) | 永続化モデル |
-| [ROADMAP.md](ROADMAP.md) | 開発優先順位 |
-| [TESTING.md](TESTING.md) | 検証方針 |
-| [SECURITY.md](SECURITY.md) | セキュリティ方針 |
-| [decisions/](decisions/) | 重要な設計判断 |
+```json
+[
+  {
+    "id": "mymusic-analytics",
+    "name": "MyMusic Analytics",
+    "description": "MyMusicの再生履歴・音楽特徴分析",
+    "category": "Analytics",
+    "url": "http://127.0.0.1:8766",
+    "port": 8766,
+    "localPath": "C:\\Users\\your-name\\Development\\MyMusic-Analytics",
+    "repositoryUrl": "https://github.com/your-name/MyMusic-Analytics"
+  }
+]
+```
+
+`id`は重複しないkebab-case、`url`は`localhost`・`127.0.0.1`・`::1`のいずれかを使い、URL内のポートと`port`を一致させてください。`repositoryUrl`がなければ`null`にします。
+
+## 起動
+
+エクスプローラーから[start-local-dev-hub.bat](start-local-dev-hub.bat)をダブルクリックします。初回だけ依存関係を自動でインストールします。
+
+またはターミナルで起動します。
+
+```bash
+npm run dev
+```
+
+[http://127.0.0.1:8790](http://127.0.0.1:8790)を開きます。ポート確認は接続可否を1.5秒以内で判定し、アプリへHTTPリクエストは送信しません。
+
+本番モードでローカル実行する場合:
+
+```bash
+npm run build
+npm start
+```
+
+## 検証
+
+```bash
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```
+
+## Roadmap
+
+```text
+v1
+見る・開く
+
+v2
+起動・停止
+
+v3
+ログ
+
+v4
+Git Status
+
+v5
+Recent Commits
+```
+
+v1ではプロセス操作、ログ収集、Gitコマンド、DB、認証、クラウド同期を実装しません。

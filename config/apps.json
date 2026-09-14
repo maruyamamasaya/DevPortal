@@ -1,0 +1,12 @@
+[
+  {
+    "id": "local-dev-hub",
+    "name": "Local Dev Hub",
+    "description": "ローカル開発アプリの状態確認と入口をまとめるホーム画面",
+    "category": "Development Tools",
+    "url": "http://127.0.0.1:8790",
+    "port": 8790,
+    "localPath": "C:\\Users\\m-maruyama\\Development\\DevPortal",
+    "repositoryUrl": null
+  }
+]

@@ -1,43 +1,24 @@
 # Data Model
 
-永続化方式と永続化モデルの正本です。業務上の意味は`DOMAIN.md`、システム全体の構造は`ARCHITECTURE.md`へ記録します。永続化が不要なプロジェクトでは、**Persistence Strategy: Not applicable**と理由を記録し、残りを無理に埋めません。
-
 ## Persistence Strategy
 
-未定。
+Database persistence: Not applicable.
 
-## Entities
+アプリ定義は人が編集する`config/apps.json`を正本とする。Runtime Statusは都度取得する一時データであり保存しない。v1にDB、migration、retention管理は不要。
 
-未定。
+## App Definition
 
-## Tables / Collections
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | string | Yes | 一意なkebab-case識別子 |
+| `name` | string | Yes | 表示名 |
+| `description` | string | Yes | 短い説明 |
+| `category` | string | Yes | filter分類 |
+| `url` | string | Yes | loopback HTTP(S) URL |
+| `port` | integer | Yes | 1〜65535 |
+| `localPath` | string | Yes | Windows local directory |
+| `repositoryUrl` | string / null | No | GitHub等のrepository URL |
 
-未定。
+## Runtime Status
 
-## Primary Keys
-
-未定。
-
-## Foreign Keys
-
-未定。
-
-## Relations
-
-未定。
-
-## Ownership
-
-未定。
-
-## Lifecycle
-
-未定。
-
-## Retention
-
-未定。
-
-## Migration Notes
-
-未定。確立した移行方針と互換性上の注意だけを記録します。
+`id`、`state`、`checkedAt`、`responseTimeMs`をAPI response内だけで扱う。
