@@ -4,11 +4,11 @@ import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { CSSProperties, DragEvent } from "react";
 import type { AppDefinition, AppRuntimeStatus, StatusResponse } from "@/lib/apps/types";
-import { BLOCK_SIZES, canPlace, placeBlock, readLayout, starterLayout, updateBlock } from "@/lib/layout/grid";
-import type { BlockSize, GridLayout, LayoutBlock } from "@/lib/layout/grid";
+import { canPlace, placeBlock, readLayout, starterLayout, updateBlock } from "@/lib/layout/grid";
+import type { GridLayout, LayoutBlock } from "@/lib/layout/grid";
 
 const STORAGE_KEY = "local-dev-hub:my-layout:v1";
-const SIZES: BlockSize[] = ["1x1", "3x1", "2x2"];
+const PRESET_SIZES = [{ width: 1, height: 1 }, { width: 3, height: 1 }, { width: 2, height: 2 }];
 
 type Props = { apps: AppDefinition[]; initialStatuses: AppRuntimeStatus[] };
 
@@ -64,20 +64,20 @@ export function MyLayout({ apps, initialStatuses }: Props) {
 
   function addAt(appId: string, column: number, row: number) {
     const existing = layout.blocks.find((block) => block.appId === appId);
-    const block: LayoutBlock = { appId, column, row, size: existing?.size ?? "1x1" };
+    const block: LayoutBlock = { appId, column, row, width: existing?.width ?? 1, height: existing?.height ?? 1 };
     commit(existing ? updateBlock(layout, block) : placeBlock(layout, block), "その位置には置けません。空きマスを選んでください。");
   }
 
-  function resize(size: BlockSize) {
+  function resize(width: number, height: number) {
     if (!selectedBlock) return;
-    commit(updateBlock(layout, { ...selectedBlock, size }), "そのサイズでは他のブロックと重なります。");
+    commit(updateBlock(layout, { ...selectedBlock, width, height }), "そのサイズでは他のブロックと重なります。");
   }
 
   function addFirstFree() {
     if (!selectedAppId || selectedBlock) return;
     for (let row = 1; row <= layout.rows; row++) {
       for (let column = 1; column <= layout.columns; column++) {
-        const next = placeBlock(layout, { appId: selectedAppId, column, row, size: "1x1" });
+        const next = placeBlock(layout, { appId: selectedAppId, column, row, width: 1, height: 1 });
         if (next) { commit(next, "空きマスがありません。"); return; }
       }
     }
@@ -92,9 +92,8 @@ export function MyLayout({ apps, initialStatuses }: Props) {
 
   const occupied = new Set<string>();
   for (const block of layout.blocks) {
-    const dimensions = BLOCK_SIZES[block.size];
-    for (let row = block.row; row < block.row + dimensions.height; row++) {
-      for (let column = block.column; column < block.column + dimensions.width; column++) occupied.add(`${column}:${row}`);
+    for (let row = block.row; row < block.row + block.height; row++) {
+      for (let column = block.column; column < block.column + block.width; column++) occupied.add(`${column}:${row}`);
     }
   }
 
@@ -123,20 +122,19 @@ export function MyLayout({ apps, initialStatuses }: Props) {
               const column = index % layout.columns + 1;
               const row = Math.floor(index / layout.columns) + 1;
               if (occupied.has(`${column}:${row}`)) return null;
-              const canDropSelected = selectedAppId ? canPlace(layout, { appId: selectedAppId, column, row, size: selectedBlock?.size ?? "1x1" }, selectedBlock?.appId) : false;
+              const canDropSelected = selectedAppId ? canPlace(layout, { appId: selectedAppId, column, row, width: selectedBlock?.width ?? 1, height: selectedBlock?.height ?? 1 }, selectedBlock?.appId) : false;
               return <button key={`${column}:${row}`} className="layout-cell" style={{ gridColumn: column, gridRow: row }} type="button" aria-label={`${column}列 ${row}行の空きマス`} data-can-place={canDropSelected} onClick={() => selectedAppId ? addAt(selectedAppId, column, row) : setMessage("右の一覧からアプリを選んでください。") } onDragOver={(event) => event.preventDefault()} onDrop={(event) => onDrop(event, column, row)}><span>＋</span></button>;
             })}
             {[...layout.blocks].sort((a, b) => a.row - b.row || a.column - b.column).map((block) => {
               const app = appById.get(block.appId);
               if (!app) return null;
-              const dimensions = BLOCK_SIZES[block.size];
               const isOpenable = app.kind === "web" || statusById.get(app.id)?.state === "running";
               const isSelected = selectedAppId === app.id;
-              return <article key={app.id} className="layout-block" data-size={block.size} data-selected={isSelected} style={{ gridColumn: `${block.column} / span ${dimensions.width}`, gridRow: `${block.row} / span ${dimensions.height}` }} draggable onDragStart={(event) => { event.dataTransfer.setData("text/plain", app.id); setSelectedAppId(app.id); }} onClick={() => setSelectedAppId(app.id)}>
+              return <article key={app.id} className="layout-block" data-size={`${block.width}x${block.height}`} data-selected={isSelected} style={{ gridColumn: `${block.column} / span ${block.width}`, gridRow: `${block.row} / span ${block.height}` }} draggable onDragStart={(event) => { event.dataTransfer.setData("text/plain", app.id); setSelectedAppId(app.id); }} onClick={() => setSelectedAppId(app.id)}>
                 <div className="layout-block-top"><span className="layout-block-kind">{app.kind === "web" ? "WEB" : statusById.get(app.id)?.state === "running" ? "RUNNING" : "STOPPED"}</span><span className="layout-drag-hint" aria-hidden="true">⠿</span></div>
-                {block.size === "2x2" && (app.previewUrl && !failedImages.includes(app.id) ? <Image className="layout-block-preview" src={app.previewUrl} alt="" width={320} height={180} unoptimized onError={() => setFailedImages((ids) => [...ids, app.id])} /> : <div className="layout-block-preview-placeholder" aria-hidden="true"><div><span /><span /><span /></div><strong>{app.name.slice(0, 1).toUpperCase()}</strong><small>プレビュー未登録</small></div>)}
+                {block.width >= 2 && block.height >= 2 && (app.previewUrl && !failedImages.includes(app.id) ? <Image className="layout-block-preview" src={app.previewUrl} alt="" width={320} height={180} unoptimized onError={() => setFailedImages((ids) => [...ids, app.id])} /> : <div className="layout-block-preview-placeholder" aria-hidden="true"><div><span /><span /><span /></div><strong>{app.name.slice(0, 1).toUpperCase()}</strong><small>プレビュー未登録</small></div>)}
                 <div className="layout-block-body"><span className="layout-block-icon" aria-hidden="true">{app.kind === "web" && !failedFavicons.includes(app.id) ? <Image src={`/api/apps/favicon/${app.id}`} alt="" width={26} height={26} unoptimized onError={() => setFailedFavicons((ids) => [...ids, app.id])} /> : app.name.slice(0, 1).toUpperCase()}</span><div><h2>{app.name}</h2><p>{app.description}</p></div></div>
-                <div className="layout-block-bottom"><span>{block.size.replace("x", "×")}</span>{isOpenable ? <a href={app.url} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>開く ↗</a> : <span>停止中</span>}</div>
+                <div className="layout-block-bottom"><span>{block.width}×{block.height}</span>{isOpenable ? <a href={app.url} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>開く ↗</a> : <span>停止中</span>}</div>
               </article>;
             })}
           </div>
