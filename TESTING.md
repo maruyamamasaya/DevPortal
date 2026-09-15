@@ -9,9 +9,10 @@
 | 変更タイプ | 必要な検証 |
 | --- | --- |
 | app設定・検証 | Unit test、typecheck |
-| status checker・API | Unit test、typecheck、build、manual verification |
+| status checker・API | typecheck、build、manual verification |
 | UI・CSS | lint、typecheck、build、browser verification |
 | 起動script | Windowsでの手動起動 |
+| Start/Stop | 同一Origin API、外部起動アプリのStop拒否、Hub所有アプリの起動・停止を実機確認 |
 
 ## Fast Validation
 
@@ -33,7 +34,7 @@ npm run build
 ## Manual Verification
 
 - `http://127.0.0.1:8790`が表示される。
-- Running / Stopped、summary、使用中portが整合する。
+- LocalのRunning / Stopped、Web App件数、summary、使用中portが整合する。
 - 15秒以内の自動更新と手動Refreshが動く。
-- 検索、category filter、Open、GitHubのenabled状態を確認する。
+- 検索、category filter、Local/Web別のOpen、GitHubのenabled状態を確認する。
 - light / dark、desktop / narrow viewportで読みやすい。

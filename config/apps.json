@@ -1,6 +1,7 @@
 [
   {
     "id": "local-dev-hub",
+    "kind": "local",
     "name": "Local Dev Hub",
     "description": "ローカル開発アプリの状態確認と入口をまとめるホーム画面",
     "category": "Development Tools",
@@ -8,5 +9,110 @@
     "port": 8790,
     "localPath": "C:\\Users\\m-maruyama\\Development\\DevPortal",
     "repositoryUrl": null
+  },
+  {
+    "id": "living-aurora-ui",
+    "kind": "local",
+    "name": "Living Aurora UI",
+    "description": "静かなオーロラをテーマにしたUI",
+    "category": "Experiments",
+    "url": "http://127.0.0.1:8767",
+    "port": 8767,
+    "localPath": "C:\\Users\\m-maruyama\\Development\\living-aurora-ui",
+    "repositoryUrl": null,
+    "launch": { "script": "dev", "portArg": "-p" }
+  },
+  {
+    "id": "command-manager",
+    "kind": "local",
+    "name": "Command Manager",
+    "description": "コマンドを整理するTauriデスクトップアプリの開発画面",
+    "category": "Development Tools",
+    "url": "http://localhost:1420",
+    "port": 1420,
+    "localPath": "C:\\Users\\m-maruyama\\Development\\command-manager",
+    "repositoryUrl": null,
+    "launch": { "script": "tauri", "portEnv": "CHEATSHEET_DEV_PORT", "tauriDevUrl": true }
+  },
+  {
+    "id": "myskill-checker",
+    "kind": "local",
+    "name": "MySkill Checker",
+    "description": "スキルを閲覧するAstroダッシュボード",
+    "category": "Analytics",
+    "url": "http://localhost:4321",
+    "port": 4321,
+    "localPath": "C:\\Users\\m-maruyama\\Development\\myskill-checker-starter",
+    "repositoryUrl": null,
+    "launch": { "script": "dev", "portEnv": "MYSKILL_DEV_PORT", "astroForeground": true }
+  },
+  {
+    "id": "myskill-editor",
+    "kind": "local",
+    "name": "MySkill Editor",
+    "description": "YAMLを更新するローカル編集画面（起動検証は未完了）",
+    "category": "Development Tools",
+    "url": "http://127.0.0.1:4174",
+    "port": 4174,
+    "localPath": "C:\\Users\\m-maruyama\\Development\\myskill-checker-starter",
+    "repositoryUrl": null,
+    "launch": { "script": "edit", "portEnv": "MYSKILL_EDITOR_PORT" }
+  },
+  {
+    "id": "github-monitor",
+    "kind": "local",
+    "name": "GitHub Monitor",
+    "description": "GitHubの状態を確認するダッシュボード",
+    "category": "Development Tools",
+    "url": "http://127.0.0.1:3000",
+    "port": 3000,
+    "localPath": "C:\\Users\\m-maruyama\\Development\\github-monitor",
+    "repositoryUrl": null,
+    "launch": { "script": "dev", "portEnv": "PORT" }
+  },
+  {
+    "id": "taskflow",
+    "kind": "web",
+    "name": "Taskflow",
+    "description": "タスク管理アプリ",
+    "category": "Main Apps",
+    "url": "https://task-manager-marum.vercel.app/dashboard",
+    "repositoryUrl": null
+  },
+  {
+    "id": "memo-app",
+    "kind": "web",
+    "name": "memoアプリ",
+    "description": "共有メモアプリ",
+    "category": "Main Apps",
+    "url": "https://maruyamamasaya.github.io/memo-tool/shared-memo/",
+    "repositoryUrl": "https://github.com/maruyamamasaya/memo-tool"
+  },
+  {
+    "id": "my-wikipedia",
+    "kind": "web",
+    "name": "myWikipedia",
+    "description": "個人Wikiアプリ",
+    "category": "Main Apps",
+    "url": "https://maruyamamasaya.github.io/my-wiki/",
+    "repositoryUrl": "https://github.com/maruyamamasaya/my-wiki"
+  },
+  {
+    "id": "study-note",
+    "kind": "web",
+    "name": "study note",
+    "description": "学習ノートアプリ",
+    "category": "Main Apps",
+    "url": "https://maruyamamasaya.github.io/study/#/",
+    "repositoryUrl": null
+  },
+  {
+    "id": "tool",
+    "kind": "web",
+    "name": "tool",
+    "description": "Webツール集",
+    "category": "Utilities",
+    "url": "https://maruyamamasaya.github.io/tool/",
+    "repositoryUrl": "https://github.com/maruyamamasaya/tool"
   }
 ]

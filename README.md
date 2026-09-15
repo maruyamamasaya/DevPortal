@@ -1,8 +1,12 @@
 # Local Dev Hub
 
+カードのページプレビューは任意です。トップページのスクリーンショットを `public/previews/<app-id>.png` に置き、`config/apps.json` の対象アプリに `"previewUrl": "/previews/<app-id>.png"` を追加すると表示されます。未登録・読み込み失敗時は代替表示になります。Webアプリのファビコンは自動取得し、取得成功分を実行中のServerで6時間キャッシュします。
+
 ## Local Dev Hubとは
 
-複数のローカル開発アプリをまとめて確認し、起動中のアプリやGitHub Repositoryへ移動するための、ローカル開発環境の玄関口です。DB・認証・外部サービスを使わず、ローカルだけで動作します。
+サイドバーから「マイレイアウト」と「アイコン表示」に切り替えられます。マイレイアウトは4×4の見本から始まり、アプリを空きマスへ追加、ドラッグ移動、サイズ変更できます。配置は利用中のブラウザに自動保存されます。行は12まで、列は6まで拡張できます。
+
+複数のローカル開発アプリの状態をまとめて確認し、ローカル／公開WebアプリやGitHub Repositoryへ移動するための、ローカル開発環境の玄関口です。DB・認証・外部APIを使わず、Hub自体はローカルで動作します。
 
 ## v1
 
@@ -19,7 +23,20 @@
 - Running / Stoppedを15秒ごとに自動更新
 - 手動Refresh、名前検索、カテゴリフィルター
 - RunningアプリとGitHub Repositoryを新しいタブで開く
+- 公開WebアプリはWeb Appとして表示し、状態を監視せずOpenで開く
 - OS設定に合わせたライト／ダーク表示
+
+## 起動・停止（v2の最小連携）
+
+登録したローカルアプリのうち`launch`があるカードにはStartが表示されます。ポートが空いている場合だけHubがそのリポジトリで`npm.cmd run`を実行します。アプリの出力はHubを起動したターミナルに流れます。Hubが起動したプロセスにはStopが表示され、Windowsの`taskkill /T /F`でそのプロセスツリーを停止します。Hub以外から起動したアプリはRunningと表示されますが、Stopはできません。Hubを再起動すると起動プロセスの所有情報が失われるため、再起動前にStopしてください。
+
+登録済みポートはLiving Aurora UI `8767`、Command Manager `1420`、MySkill Checker `4321`、MySkill Editor `4174`、GitHub Monitor `3000`です。既定値は各アプリ側で変更していません。MySkill CheckerのAstro 7は`localhost`で待ち受け、AI環境で自動background化するため、Hub起動時だけ`astroForeground`を指定しています。MySkill Editorは先方の環境で`ENOMEM`により起動検証が未完了です。Command ManagerはTauri開発起動時に`CHEATSHEET_DEV_PORT`と`build.devUrl`を同じ番号にしますが、デスクトップ画面の実動作検証は未完了です。
+
+起動設定は以下の形式です。`script`は`dev`、`edit`、`tauri`だけに限定し、ポートは`portEnv`または`portArg`から渡します。Tauriでは`tauriDevUrl`、Astro 7では`astroForeground`も指定できます。Start/StopはこのPCのプロセスを操作するため、Hubは必ず`127.0.0.1`にだけ公開してください。
+
+```json
+"launch": { "script": "dev", "portEnv": "PORT" }
+```
 
 ## 必要環境
 
@@ -39,6 +56,7 @@ npm install
 [
   {
     "id": "mymusic-analytics",
+    "kind": "local",
     "name": "MyMusic Analytics",
     "description": "MyMusicの再生履歴・音楽特徴分析",
     "category": "Analytics",
@@ -50,7 +68,21 @@ npm install
 ]
 ```
 
-`id`は重複しないkebab-case、`url`は`localhost`・`127.0.0.1`・`::1`のいずれかを使い、URL内のポートと`port`を一致させてください。`repositoryUrl`がなければ`null`にします。
+公開Webアプリは次のように登録します。`port`と`localPath`は不要です。
+
+```json
+{
+  "id": "study-note",
+  "kind": "web",
+  "name": "study note",
+  "description": "学習ノートアプリ",
+  "category": "Main Apps",
+  "url": "https://maruyamamasaya.github.io/study/#/",
+  "repositoryUrl": null
+}
+```
+
+`id`は重複しないkebab-case。Localの`url`は`localhost`・`127.0.0.1`・`::1`のいずれかを使い、URL内のポートと`port`を一致させてください。Webの`url`は外部HTTPSにします。`repositoryUrl`がなければ`null`にします。公開WebアプリのRunning / Stoppedや到達性は判定しません。
 
 ## 起動
 
@@ -99,4 +131,4 @@ v5
 Recent Commits
 ```
 
-v1ではプロセス操作、ログ収集、Gitコマンド、DB、認証、クラウド同期を実装しません。
+ログ収集、Gitコマンド、DB、認証、クラウド同期は実装していません。

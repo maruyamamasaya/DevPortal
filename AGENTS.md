@@ -3,10 +3,10 @@
 ## Project Context
 
 - **Project Name**: Local Dev Hub
-- **Purpose**: ローカル開発環境の玄関口として、登録アプリの状態を確認し、目的のアプリを開く。
+- **Purpose**: ローカル開発環境の玄関口として、登録したローカルアプリの状態を確認し、ローカル／公開Webアプリを開く。
 - **Primary Stack**: Next.js 16 / React 19 / TypeScript / App Router / Node.js TCP status check。
-- **Main Domains**: App Definition、Runtime Status、category、local URL、port。
-- **Expected Work**: v1の一覧・状態確認・検索・遷移、および正本との整合維持。v2以降はRoadmap順に追加する。
+- **Main Domains**: App Definition、Runtime Status、category、local／Web URL、port。
+- **Expected Work**: v1の一覧・ローカル状態確認・検索・遷移、および正本との整合維持。v2以降はRoadmap順に追加する。
 - **Out of Scope for v1**: process操作、ログ、Git status/log、自動Git操作、DB、認証、外部API、クラウド同期、Docker。
 - **Clearly Unrelated Examples**: このRepositoryに存在しない別製品名、別製品固有の画面・クラス・DB・ファイルパスを複数前提にした修正、または別Repository内の実装をこのRepositoryの既存機能であるかのように変更する要求。
 
@@ -14,7 +14,7 @@
 
 ファイル変更、ファイル作成、パッケージ追加、DB変更、破壊的コマンド、commit、pushの前に、ユーザー要求を上記Project Contextおよび`CURRENT.md`と照合する。これは正当な新機能を制限するホワイトリストではなく、誤ったRepository操作を止めるための事前確認である。
 
-1. **MATCH**: 現在のStarter、その保守、または明示的なプロジェクト初期化と明確に関連する。通常のフローで作業する。
+1. **MATCH**: 現在のLocal Dev Hubと明確に関連する。通常のフローで作業する。
 2. **UNCERTAIN**: このRepositoryで実現可能だが、新技術、新領域、大きな構成変更、または初期化意図が不明瞭である。拒否せず、`CURRENT.md`、関連する正本、Repository内の検索結果を追加確認し、必要ならユーザーへ確認してから作業を判断する。確認が済むまでは変更や副作用のあるコマンドを実行しない。
 3. **MISMATCH**: 別プロジェクト名、別プロジェクト固有機能、固有ファイル名・クラス名、明確に異なる既存プラットフォーム、複数の矛盾したシグナルなどから、別プロジェクト向けである確信が高い。作業を停止し、ファイル変更、新規作成、パッケージ追加、DB変更、破壊的コマンド、commit、pushを行わない。応答では **Current Project**、**Mismatchと判断した理由**、**Prompt内の不一致要素**、**No files were modified** を簡潔に示す。
 
@@ -51,7 +51,7 @@ SQLite、React、API、Docker、Python、Swift、databaseなどの一般的な�
 - 後から理由が必要になる重要な設計判断だけをADRへ残す。
 - ドキュメントと実装の不整合を放置しない。
 - 秘密情報、credential、token、個人情報の実値を記録しない。
-- 現時点では実装、技術固有設定、CODEMAP、階層型AGENTS、verify script、sessionsを作らない。
+- CODEMAP、階層型AGENTS、verify script、sessionsは必要になったときだけ作る。
 
 ## Source of Truth
 

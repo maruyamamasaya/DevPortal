@@ -2,21 +2,29 @@
 
 ## Current Phase
 
-Local Dev Hub v1
+Local Dev Hub v1 + 最小v2連携
 
 ## Current State
 
-Next.js App Routerで、設定済みローカルアプリの一覧・稼働状態・入口を1画面にまとめるv1を実装済み。
+Next.js App Routerで、設定済みローカルアプリの稼働状態と、公開Webアプリを含む一覧・入口を1画面にまとめるv1を実装済み。
 
 ## Working
 
 - `config/apps.json`からのアプリ定義読み込みと起動時検証。
 - Node.js側のTCPポート確認によるRunning / Stopped判定。
+- 公開Webアプリ5件のリンク登録。Webアプリは稼働監視せず、Web Appとして表示する。
 - 初期状態のServer rendering、15秒間隔の自動更新、手動Refresh。
 - アプリ名検索、カテゴリフィルター、Open / GitHub導線。
 - Running件数、Stopped件数、使用中ポートのサマリー。
 - Windows用`start-local-dev-hub.bat`と固定ポート8790。
 - OS設定に追従するライト／ダークUI。
+- 横長カードのページプレビュー枠。`previewUrl`でローカル画像を登録し、未登録時は代替表示。
+- Webアプリのファビコンを登録済みURLから取得し、6時間キャッシュする。
+- 4製品をローカル登録。MySkillは閲覧／編集の2ポートを別カード化。
+- 設定済みローカルアプリのStart/Stop。Hubが起動したプロセスだけ停止可能。
+- 共通サイドバーからアプリ一覧・マイレイアウト・アイコン表示を切り替えられる。
+- マイレイアウトは4×4を初期値とし、1×1・3×1・2×2ブロックの配置、移動、サイズ変更、行列の拡張をブラウザに保存する。
+- アイコン表示ではアイコンとタイトルだけを並べ、起動中LocalとWebを開ける。
 
 ## In Progress
 
@@ -26,7 +34,9 @@ Next.js App Routerで、設定済みローカルアプリの一覧・稼働状�
 
 - TCPポートがaccept状態ならRunningと判定するため、アプリ固有のHTTP healthまでは検証しない。
 - `apps.json`はLocal Dev Hub再起動時に再読込される。
+- Hub再起動後はプロセス所有情報が失われ、以前Hubが起動したプロセスもStopできない。
+- Command ManagerのTauriデスクトップ画面とMySkill Editorの起動は未検証。Living Aurora UI、MySkill Checker閲覧画面、GitHub MonitorのStart/Stopは実機確認済み。
 
 ## Immediate Next
 
-- 実際に利用するローカルアプリを`config/apps.json`へ登録する。
+- 登録済みアプリの実機でStart/Stopを確認する。

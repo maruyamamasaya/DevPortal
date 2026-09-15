@@ -2,7 +2,7 @@
 
 ## System Overview
 
-ローカルPC上で動作する単一のNext.js application。App DefinitionをJSONから読み込み、Node.js側で各loopback portへのTCP接続可否を確認し、serializableなstatusだけをClient Componentへ渡す。
+ローカルPC上で動作する単一のNext.js application。Local/WebのApp DefinitionをJSONから読み込み、LocalのみNode.js側でloopback portへのTCP接続可否を確認する。serializableな定義とstatusをClient Componentへ渡す。
 
 ## Technology Stack
 
@@ -18,26 +18,46 @@
 - `src/lib/apps/validate.ts`: 設定値の境界検証。
 - `src/lib/apps/status-checker.ts`: TCP port status checker。
 - `src/app/api/apps/status/route.ts`: UIの定期更新用read-only endpoint。
+- `src/lib/apps/process-manager.ts`: Hub所有プロセスだけを扱う一時的な管理表と起動・停止。
+- `src/app/api/apps/process/route.ts`: Originを確認するStart/Stop endpoint。
 - `src/components/dev-hub.tsx`: 検索、filter、status更新、カード表示。
+- `src/app/api/apps/favicon/[id]/route.ts`: 登録済みWeb Appのファビコン取得と6時間のメモリキャッシュ。
+- `src/components/hub-sidebar.tsx`: 3つの表示を切り替える共通ナビゲーション。
+- `src/lib/layout/grid.ts`: マス目上の配置、重なり判定、保存データ検証。
+- `src/app/my-layout/page.tsx` / `src/components/my-layout.tsx`: ユーザー配置の編集・表示。
+- `src/app/icons/page.tsx` / `src/components/icon-view.tsx`: アイコンとタイトルの簡易表示。
 
 ## Data Flow
 
+マイレイアウトはアプリ定義と初期状態をServerから受け取り、配置座標・サイズのみブラウザの`localStorage`へ保存する。登録アプリの正本は引き続き`apps.json`であり、配置保存にはURLや秘密情報を含めない。将来のウィジェット追加時はブロック対象の種類を明示する拡張を行う。
+
 1. Server Componentが`apps.json`を読み込み検証する。
-2. status checkerが全アプリのportへ並列接続する。
+2. status checkerがLocal Appのportだけへ並列接続する。Web Appは接続しない。
 3. 初期HTMLへアプリ定義とstatusを渡す。
 4. Client Componentが15秒ごと、または手動操作時にstatus endpointを呼ぶ。
 5. endpointがその時点のstatusを再確認して返す。
 
 ## External Services
 
-なし。GitHub URLはブラウザで開くリンクとしてのみ扱い、GitHub APIは呼ばない。
+Web Appのファビコン取得時だけ、登録済み公開URLと同一originの画像をServerが取得する。Web Appの稼働監視は行わない。GitHub URLはブラウザで開くリンクとしてのみ扱う。
 
 ## Deployment
 
 Windows上のNode.js processとして`127.0.0.1:8790`でローカル実行する。
 
+## Desktop Migration Considerations
+
+デスクトップアプリ化は[ROADMAP.md](ROADMAP.md)に記載した実施予定であり、方式はまだ決定していない。現在はUIとローカル操作を分離しているが、UIはNext.jsの動的Server renderingと`/api/apps/*`を利用するため、静的なWebViewへ画面だけを移しても現機能は動かない。
+
+- UI: `src/components/dev-hub.tsx`の検索・filter・カード表示は再利用候補。ただし状態更新とStart/Stopは相対URLのAPI呼び出しに依存する。
+- ローカル機能: `src/lib/apps/definitions.ts`、`status-checker.ts`、`process-manager.ts`はNode.js server側で動作する。実行場所を変える場合はUIとの呼び出し境界を再設計する。
+- プロセス管理: 所有情報はserver processのメモリ上だけにあり、再起動後は失われる。起動にはPowerShell、停止にはWindowsの`taskkill`を使う。アプリ終了時や再起動後の所有・停止ルールが必要。
+- 配布: 現状は`config/apps.json`と登録先のローカルパス、Node.js/Next.js実行環境を前提とする。インストール後の設定保存先と実行環境の同梱方法を決める必要がある。
+
+候補は、Node.js/Next.js serverをデスクトップアプリに同梱して既存APIを使う方式と、画面を再利用しローカル機能をデスクトップ側へ移す方式。どちらも未選定であり、選定前に静的書き出しや特定frameworkへの移行を前提としない。
+
 ## Key Constraints
 
 - Status check対象はloopback hostだけに限定する。
-- v1は閲覧と遷移だけを担い、OS processやGit Repositoryを変更しない。
+- 起動設定は`apps.json`の`launch`へ限定し、Hub以外のプロセスを停止しない。
 - DB、認証、Docker、外部APIを使わない。

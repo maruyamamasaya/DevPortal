@@ -10,17 +10,17 @@ loopback interfaceだけで動く個人用local applicationのためv1では設�
 
 ## Input Validation
 
-- `apps.json`は起動時に型、必須値、port範囲、重複idを検証する。
-- status check対象URLは`localhost`、`127.0.0.1`、`::1`だけを許可し、外部hostへの任意接続を防ぐ。
-- URL protocolはHTTP(S)だけを許可する。
+- `apps.json`は起動時に型、必須値、port範囲、重複id・重複local port、起動設定を検証する。
+- status check対象のLocal App URLは`localhost`、`127.0.0.1`、`::1`だけを許可し、外部hostへの任意接続を防ぐ。
+- Web Appは外部HTTPS URLのみ許可し、HubのServerから接続しない。
 
 ## External Services
 
-なし。repository URLはユーザー操作でbrowserへ渡すだけで、Serverからアクセスしない。
+Serverからの外部アクセスなし。Web Appとrepository URLはユーザー操作でbrowserへ渡すだけで、Serverからアクセスしない。
 
 ## Process Safety
 
-v1はprocess実行、停止、kill、shell command実行、Git操作を行わない。
+Start/Stop endpointは同一OriginのJSON POSTだけを受け付ける。設定済みの`npm run` scriptと数値portだけを使い、指定directoryで起動する。停止はHubの稼働中セッションが保持するPIDだけをWindowsの`taskkill /T /F`へ渡す。外部から起動済みの同ポートは停止しない。Hub再起動後はPIDを引き継がない。Git操作は行わない。
 
 ## Dependencies
 

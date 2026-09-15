@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { AppDefinition, AppRuntimeStatus, StatusResponse } from "@/lib/apps/types";
+import Image from "next/image";
+import type { AppDefinition, AppRuntimeStatus, LocalAppDefinition, StatusResponse } from "@/lib/apps/types";
 
 const REFRESH_INTERVAL_MS = 15_000;
 
@@ -57,6 +58,10 @@ export function DevHub({ apps, initialStatuses }: DevHubProps) {
   const [category, setCategory] = useState("All");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState(false);
+  const [busyAppId, setBusyAppId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [failedPreviews, setFailedPreviews] = useState<string[]>([]);
+  const [failedFavicons, setFailedFavicons] = useState<string[]>([]);
 
   const statusById = useMemo(
     () => new Map(statuses.map((status) => [status.id, status])),
@@ -75,8 +80,10 @@ export function DevHub({ apps, initialStatuses }: DevHubProps) {
     );
   }, [apps, category, search]);
 
-  const runningApps = apps.filter((app) => statusById.get(app.id)?.state === "running");
-  const stoppedCount = apps.length - runningApps.length;
+  const localApps = apps.filter((app): app is LocalAppDefinition => app.kind === "local");
+  const webCount = apps.length - localApps.length;
+  const runningApps = localApps.filter((app) => statusById.get(app.id)?.state === "running");
+  const stoppedCount = localApps.length - runningApps.length;
   const lastCheckedAt = statuses[0]?.checkedAt;
 
   const refreshStatuses = useCallback(async () => {
@@ -99,6 +106,26 @@ export function DevHub({ apps, initialStatuses }: DevHubProps) {
     return () => window.clearInterval(timer);
   }, [refreshStatuses]);
 
+  const performAction = async (id: string, action: "start" | "stop") => {
+    setBusyAppId(id);
+    setActionError(null);
+    try {
+      const response = await fetch("/api/apps/process", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, action }),
+      });
+      const result = (await response.json()) as { error?: string };
+      if (!response.ok) throw new Error(result.error ?? "操作に失敗しました。");
+      await refreshStatuses();
+      if (action === "start") window.setTimeout(() => void refreshStatuses(), 3_000);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : "操作に失敗しました。");
+    } finally {
+      setBusyAppId(null);
+    }
+  };
+
   return (
     <main className="shell">
       <header className="hero">
@@ -113,7 +140,7 @@ export function DevHub({ apps, initialStatuses }: DevHubProps) {
             <h1>Local Dev Hub</h1>
           </div>
         </div>
-        <p className="hero-copy">いま動いているアプリを確認して、すぐに開く。</p>
+        <p className="hero-copy">すべてのアプリへ、ひとつの入口から。</p>
       </header>
 
       <section className="summary" aria-label="アプリ状態の概要">
@@ -128,6 +155,10 @@ export function DevHub({ apps, initialStatuses }: DevHubProps) {
         <div className="summary-stat">
           <span className="summary-value">{stoppedCount}</span>
           <span className="summary-label"><i className="stopped-dot" />Stopped</span>
+        </div>
+        <div className="summary-stat web-stat">
+          <span className="summary-value">{webCount}</span>
+          <span className="summary-label">Web Apps</span>
         </div>
         <div className="port-summary">
           <span className="summary-label">ACTIVE PORTS</span>
@@ -173,52 +204,60 @@ export function DevHub({ apps, initialStatuses }: DevHubProps) {
         </div>
       </section>
 
+      {actionError && <p className="action-error" role="alert">{actionError}</p>}
+
       <section className="app-grid">
         {filteredApps.map((app) => {
           const status = statusById.get(app.id);
           const isRunning = status?.state === "running";
+          const isWeb = app.kind === "web";
+          const isOpenable = isWeb || isRunning;
           return (
             <article className="app-card" key={app.id}>
-              <div className="card-accent" data-running={isRunning} />
-              <div className="card-head">
-                <span className="category-badge">{app.category}</span>
-                <span className={isRunning ? "status-badge is-running" : "status-badge"}>
-                  <i />{isRunning ? "Running" : "Stopped"}
-                </span>
+              <div className="card-accent" data-running={isRunning} data-web={isWeb} />
+              <div className="card-preview" aria-hidden="true">
+                {app.previewUrl && !failedPreviews.includes(app.id) ? (
+                  <Image src={app.previewUrl} alt="" width={250} height={140} unoptimized onError={() => setFailedPreviews((ids) => [...ids, app.id])} />
+                ) : (
+                  <div className="preview-placeholder"><span>{app.name.slice(0, 1).toUpperCase()}</span><small>Preview unavailable</small></div>
+                )}
               </div>
-              <div className="card-title-row">
-                <div className="app-icon" aria-hidden="true">{app.name.slice(0, 1).toUpperCase()}</div>
-                <div>
-                  <h2>{app.name}</h2>
-                  <p>{app.description}</p>
+              <div className="card-content">
+                <div className="card-head">
+                  <span className="category-badge">{app.category}</span>
+                  <span className={isWeb ? "status-badge is-web" : isRunning ? "status-badge is-running" : "status-badge"}>
+                    <i />{isWeb ? "Web App" : isRunning ? "Running" : "Stopped"}
+                  </span>
+                </div>
+                <div className="card-title-row">
+                  {isWeb && !failedFavicons.includes(app.id) ? (
+                    <Image className="app-favicon" src={`/api/apps/favicon/${app.id}`} alt="" width={40} height={40} unoptimized onError={() => setFailedFavicons((ids) => [...ids, app.id])} />
+                  ) : (
+                    <div className="app-icon" aria-hidden="true">{app.name.slice(0, 1).toUpperCase()}</div>
+                  )}
+                  <div>
+                    <h2>{app.name}</h2>
+                    <p>{app.description}</p>
+                  </div>
+                </div>
+                <div className="app-meta" title={isWeb ? app.url : app.localPath}>
+                  <span>{isWeb ? new URL(app.url).hostname : `localhost:${app.port}`}</span>
+                  <span className="meta-separator" aria-hidden="true" />
+                  <span>{isWeb ? "Web" : status?.managed ? "Hub managed" : "Local"}</span>
                 </div>
               </div>
-              <dl className="app-details">
-                <div>
-                  <dt>LOCAL URL</dt>
-                  <dd>
-                    {isRunning ? (
-                      <a href={app.url} target="_blank" rel="noreferrer">{app.url}</a>
-                    ) : (
-                      app.url
-                    )}
-                  </dd>
-                </div>
-                <div>
-                  <dt>PORT</dt>
-                  <dd><code>:{app.port}</code></dd>
-                </div>
-                <div className="path-row">
-                  <dt>DIRECTORY</dt>
-                  <dd title={app.localPath}>{app.localPath}</dd>
-                </div>
-                <div className="path-row">
-                  <dt>GITHUB</dt>
-                  <dd title={app.repositoryUrl ?? undefined}>{app.repositoryUrl ?? "Not configured"}</dd>
-                </div>
-              </dl>
               <div className="card-actions">
-                {isRunning ? (
+                {app.kind === "local" && app.launch && (
+                  <button
+                    className="process-action"
+                    type="button"
+                    disabled={busyAppId !== null || (status?.managed ? false : isRunning)}
+                    onClick={() => void performAction(app.id, status?.managed ? "stop" : "start")}
+                  >
+                    {busyAppId === app.id ? "Working..." : status?.managed ? "Stop" : "Start"}
+                  </button>
+                )}
+                {isOpenable ? (
                   <a className="primary-action" href={app.url} target="_blank" rel="noreferrer">
                     Open <ArrowIcon />
                   </a>
@@ -247,7 +286,7 @@ export function DevHub({ apps, initialStatuses }: DevHubProps) {
 
       <footer>
         <span><i /> Status checks run locally every 15 seconds</span>
-        <span>Local Dev Hub · v1</span>
+        <span>Local Dev Hub · v1 + Start/Stop</span>
       </footer>
     </main>
   );

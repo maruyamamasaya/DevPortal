@@ -1,7 +1,7 @@
 import "server-only";
 
 import net from "node:net";
-import type { AppDefinition, AppRuntimeStatus } from "./types";
+import type { AppDefinition, AppRuntimeStatus, LocalAppDefinition } from "./types";
 
 const CHECK_TIMEOUT_MS = 1_500;
 
@@ -25,7 +25,7 @@ function checkPort(host: string, port: number): Promise<number | null> {
   });
 }
 
-export async function checkAppStatus(app: AppDefinition): Promise<AppRuntimeStatus> {
+export async function checkAppStatus(app: LocalAppDefinition): Promise<AppRuntimeStatus> {
   const url = new URL(app.url);
   const host = url.hostname === "[::1]" ? "::1" : url.hostname;
   const responseTimeMs = await checkPort(host, app.port);
@@ -39,5 +39,5 @@ export async function checkAppStatus(app: AppDefinition): Promise<AppRuntimeStat
 }
 
 export async function checkAllAppStatuses(apps: AppDefinition[]) {
-  return Promise.all(apps.map(checkAppStatus));
+  return Promise.all(apps.filter((app): app is LocalAppDefinition => app.kind === "local").map(checkAppStatus));
 }

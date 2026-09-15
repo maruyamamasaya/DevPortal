@@ -2,31 +2,39 @@
 
 ## Glossary
 
-- **App Definition**: `apps.json`に登録されたローカル開発アプリの静的情報。
+- **App Definition**: `apps.json`に登録されたローカル／公開Webアプリの静的情報。
 - **Running**: 指定portへのTCP接続が制限時間内に成功した状態。
 - **Stopped**: 指定portへのTCP接続が失敗またはtimeoutした状態。
-- **Open**: RunningアプリのローカルURLを新しいbrowser tabで開く導線。
+- **Web App**: 外部HTTPS URLを持つ公開アプリ。Running / Stoppedは測定しない。
+- **Open**: RunningローカルアプリまたはWebアプリのURLを新しいbrowser tabで開く導線。
+- **Hub managed**: 現在のHubプロセスが起動し、所有情報を保持しているローカルアプリ。
 
 ## Entities
 
-- Local App: id、name、description、category、URL、port、local path、任意のrepository URLを持つ。
+- Local App: id、name、description、category、loopback URL、port、local path、任意のrepository URLを持つ。
+- Web App: id、name、description、category、外部HTTPS URL、任意のrepository URLを持つ。
 - Runtime Status: app id、Running / Stopped、確認時刻、応答時間を持つ一時的な観測値。
 
 ## States
 
 - `running`
 - `stopped`
+- `web`（稼働状態ではなくアプリ種別）
 
 ## Business Rules
 
 - statusは15秒ごと、および手動Refreshで更新する。
-- Open操作はRunning時だけ有効にする。
+- Local AppのOpen操作はRunning時だけ有効にする。Web AppのOpenは常に有効。
+- 公開Webアプリに対する自動HTTP稼働確認は行わない。
 - repository URL未設定時はGitHub操作をdisabledにする。
+- Startは起動設定がありポート未使用のときだけ行う。StopはHub managedだけに行う。
 - 名前検索は大文字・小文字を区別しない。
 - categoryは登録済み値から選択する。
 
 ## Invariants
 
 - app idは重複しないkebab-case。
-- app URLはloopback hostを指し、URLのportと`port`値は一致する。
-- status確認はアプリのprocessを開始、停止、変更しない。
+- Local AppのURLはloopback hostを指し、URLのportと`port`値は一致する。
+- Local Appのportは重複しない。
+- Web AppのURLは外部HTTPSを指し、portとlocal pathを持たない。
+- status確認自体はprocessを変更しない。Start/Stopは別の明示的な操作である。
