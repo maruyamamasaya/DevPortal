@@ -12,7 +12,7 @@
 | status checker・API | typecheck、build、manual verification |
 | UI・CSS | lint、typecheck、build、browser verification |
 | Webメディア取得 | ファビコン・プレビューAPIの画像型、キャッシュ更新、browser verification |
-| Web定期取得 | Task Schedulerの30分trigger・実行結果、Web接続状態API、期限切れ表示 |
+| Web・Local定期取得 | Task Schedulerの30分trigger・実行結果、Web接続状態API、起動中LocalのPNGと停止中の画像維持 |
 | 起動script | Windowsでの手動起動 |
 | Start/Stop | 同一Origin API、外部起動アプリのStop拒否、Hub所有アプリの起動・停止を実機確認 |
 

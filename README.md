@@ -2,7 +2,7 @@
 
 Webアプリのファビコンとトップページのプレビューは自動取得し、Git管理外の`.cache/media/`に保存します。表示時に6時間を過ぎた画像は更新を試み、失敗しても古い画像を残します。初回取得や一括更新は`npm run media:refresh`でも実行できます。ChromeまたはEdgeが必要です。ログインが必要なサイトのプレビューは未認証のログイン画面になります。Localアプリはトップページ画像を`public/previews/<app-id>.png`に置き、`config/apps.json`に`"previewUrl": "/previews/<app-id>.png"`を追加できます。
 
-Windowsでは`npm run media:schedule`でユーザーの定期タスクを登録できます。画面を閉じていても30分ごとにWebサイトの接続確認と撮影を行い、ファビコンは6時間を過ぎたときだけ再取得します。画面の「接続中」「接続不可」は最後のHTTP確認結果で、75分以上更新されないと「未確認」になります。定期タスクを止める場合は`Unregister-ScheduledTask -TaskName 'Local Dev Hub - Web media refresh' -Confirm:$false`をPowerShellで実行します。
+Windowsでは`npm run media:schedule`でユーザーの定期タスクを登録できます。画面を閉じていても30分ごとにWebサイトの接続確認・撮影と、起動中Localアプリの撮影を行います。停止中Localは最後の画像を表示し、固定画像の`previewUrl`は自動撮影より優先します。ファビコンは6時間を過ぎたときだけ再取得します。画面の「接続中」「接続不可」は最後のHTTP確認結果で、75分以上更新されないと「未確認」になります。定期タスクを止める場合は`Unregister-ScheduledTask -TaskName 'Local Dev Hub - Web media refresh' -Confirm:$false`をPowerShellで実行します。
 
 ## Local Dev Hubとは
 
@@ -101,9 +101,10 @@ npm run dev
 本番モードでローカル実行する場合:
 
 ```bash
-npm run build
 npm start
 ```
+
+`npm start`は起動前にproduction buildを作り直します。古い`.next`の成果物をそのまま使いません。
 
 ## 検証
 

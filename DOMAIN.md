@@ -8,6 +8,8 @@
 - **Web App**: 外部HTTPS URLを持つ公開アプリ。Running / Stoppedは測定しない。
 - **Open**: RunningローカルアプリまたはWebアプリのURLを新しいbrowser tabで開く導線。
 - **Hub managed**: 現在のHubプロセスが起動し、所有情報を保持しているローカルアプリ。
+- **Bookmark**: ブラウザ内に保存するURLとタイトルの組。アプリ定義や状態確認の対象にはしない。
+- **Bookmark Folder**: サイドバーでBookmarkをまとめる1階層のグループ。未分類は常に存在する。
 
 ## Entities
 
@@ -30,6 +32,7 @@
 - Startは起動設定がありポート未使用のときだけ行う。StopはHub managedだけに行う。
 - 名前検索は大文字・小文字を区別しない。
 - categoryは登録済み値から選択する。
+- BookmarkのURLは`http`/`https`のみ許可し、タイトル未入力時はホスト名を使う。設定ページで追加・タイトル変更・所属フォルダー変更・削除し、サイドバーから開く。フォルダー削除時は中のBookmarkを未分類に移す。
 
 ## Invariants
 

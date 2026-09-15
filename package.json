@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev -H 127.0.0.1 -p 8790",
     "build": "next build",
+    "prestart": "npm run build",
     "start": "next start -H 127.0.0.1 -p 8790",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",

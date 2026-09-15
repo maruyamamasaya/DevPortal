@@ -51,9 +51,10 @@ function formatCheckedAt(value: string) {
 type DevHubProps = {
   apps: AppDefinition[];
   initialStatuses: AppRuntimeStatus[];
+  captureMode?: boolean;
 };
 
-export function DevHub({ apps, initialStatuses }: DevHubProps) {
+export function DevHub({ apps, initialStatuses, captureMode = false }: DevHubProps) {
   const webStatuses = useWebStatus();
   const [statuses, setStatuses] = useState(initialStatuses);
   const [search, setSearch] = useState("");
@@ -215,14 +216,14 @@ export function DevHub({ apps, initialStatuses }: DevHubProps) {
           const status = statusById.get(app.id);
           const isRunning = status?.state === "running";
           const isWeb = app.kind === "web";
-          const previewUrl = app.previewUrl ?? (isWeb ? `/api/apps/preview/${app.id}?checked=${Date.parse(webStatuses.get(app.id)?.checkedAt ?? "") || 0}` : undefined);
+          const previewUrl = captureMode ? undefined : app.previewUrl ?? (isWeb ? `/api/apps/preview/${app.id}?checked=${Date.parse(webStatuses.get(app.id)?.checkedAt ?? "") || 0}` : `/api/apps/preview/${app.id}?checked=${Math.floor(Date.parse(status?.checkedAt ?? "") / 60_000) || 0}`);
           const isOpenable = isWeb || isRunning;
           return (
             <article className="app-card" key={app.id}>
               <div className="card-accent" data-running={isRunning} data-web={isWeb} />
               <div className="card-preview" aria-hidden="true">
-                {previewUrl && !failedPreviews.includes(app.id) ? (
-                  <Image src={previewUrl} alt="" width={250} height={140} unoptimized onError={() => setFailedPreviews((ids) => [...ids, app.id])} />
+                {previewUrl && !failedPreviews.includes(previewUrl) ? (
+                  <Image src={previewUrl} alt="" width={250} height={140} unoptimized onError={() => setFailedPreviews((urls) => [...urls.slice(-31), previewUrl])} />
                 ) : (
                   <div className="preview-placeholder"><span>{app.name.slice(0, 1).toUpperCase()}</span><small>Preview unavailable</small></div>
                 )}

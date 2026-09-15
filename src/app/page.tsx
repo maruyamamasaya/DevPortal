@@ -5,9 +5,10 @@ import { isManaged } from "@/lib/apps/process-manager";
 
 export const dynamic = "force-dynamic";
 
-export default async function Home() {
+export default async function Home({ searchParams }: { searchParams: Promise<{ capture?: string }> }) {
   const apps = getAppDefinitions();
   const statuses = (await checkAllAppStatuses(apps)).map((status) => ({ ...status, managed: isManaged(status.id) }));
+  const captureMode = (await searchParams).capture === "1";
 
-  return <DevHub apps={apps} initialStatuses={statuses} />;
+  return <DevHub apps={apps} initialStatuses={statuses} captureMode={captureMode} />;
 }

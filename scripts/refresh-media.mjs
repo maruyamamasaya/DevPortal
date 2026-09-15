@@ -7,7 +7,9 @@ import { promisify } from "node:util";
 const run = promisify(execFile);
 const root = process.cwd();
 const mediaRoot = join(root, ".cache", "media");
-const apps = JSON.parse(await readFile(join(root, "config", "apps.json"), "utf8")).filter((app) => app.kind === "web");
+const definitions = JSON.parse(await readFile(join(root, "config", "apps.json"), "utf8"));
+const apps = definitions.filter((app) => app.kind === "web");
+const localApps = definitions.filter((app) => app.kind === "local" && !app.previewUrl);
 const imageTypes = new Set(["image/png", "image/x-icon", "image/vnd.microsoft.icon", "image/svg+xml", "image/webp", "image/jpeg", "image/gif", "image/avif"]);
 
 function attribute(tag, name) {
@@ -115,3 +117,24 @@ const statusPath = join(mediaRoot, "web-status.json");
 const temporaryStatusPath = join(mediaRoot, `web-status-${process.pid}.json`);
 await writeFile(temporaryStatusPath, JSON.stringify(observations));
 await rename(temporaryStatusPath, statusPath);
+
+for (const app of localApps) {
+  let reachable = false;
+  try {
+    const response = await fetch(app.url, { signal: AbortSignal.timeout(5_000) });
+    reachable = response.status < 500;
+  } catch { /* Only capture a responsive local page. */ }
+  if (!reachable) { process.stdout.write(`${app.id}: local page unavailable; keeping cached preview\n`); continue; }
+  if (!chrome) { process.stdout.write(`${app.id}: browser unavailable\n`); continue; }
+  const profile = await mkdtemp(join(tmpdir(), "dev-hub-local-media-"));
+  const temporary = join(mediaRoot, "previews", `${app.id}-${process.pid}-${Date.now()}.png`);
+  try {
+    const captureUrl = app.id === "local-dev-hub" ? `${app.url.replace(/\/$/, "")}/?capture=1` : app.url;
+    await run(chrome, ["--headless=new", "--disable-gpu", "--no-first-run", "--no-default-browser-check", `--user-data-dir=${profile}`, "--window-size=1280,720", "--virtual-time-budget=6000", `--screenshot=${temporary}`, captureUrl], { windowsHide: true, timeout: 25_000, maxBuffer: 1024 * 1024 });
+    const info = await stat(temporary);
+    if (info.size === 0 || info.size > 4 * 1024 * 1024) throw new Error("Invalid screenshot size");
+    await rename(temporary, join(mediaRoot, "previews", `${app.id}.png`));
+    process.stdout.write(`${app.id}: local preview ${info.size} bytes\n`);
+  } catch (error) { process.stdout.write(`${app.id}: local preview failed (${error.message})\n`); }
+  finally { await rm(temporary, { force: true }).catch(() => undefined); await rm(profile, { recursive: true, force: true }).catch(() => undefined); }
+}

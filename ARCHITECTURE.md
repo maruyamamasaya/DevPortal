@@ -22,11 +22,13 @@
 - `src/app/api/apps/process/route.ts`: Originを確認するStart/Stop endpoint。
 - `src/components/dev-hub.tsx`: 検索、filter、status更新、カード表示。
 - `src/app/api/apps/favicon/[id]/route.ts`: 登録済みWeb Appのファビコン取得と6時間のファイルキャッシュ。
-- `src/app/api/apps/preview/[id]/route.ts`: 分離したヘッドレスブラウザでWeb Appを撮影してPNGを返す。
+- `src/app/api/apps/preview/[id]/route.ts`: 分離したヘッドレスブラウザでWebと起動中Localを撮影してPNGを返す。停止中Localは保存済み画像を返す。
 - `src/lib/apps/media-cache.ts` / `scripts/refresh-media.mjs`: `.cache/media/`への保存と一括更新。
-- `scripts/install-media-schedule.ps1`: Windowsの定期タスクを登録し、画面を閉じていても30分ごとにWebの接続確認・撮影を実行する。
+- `scripts/install-media-schedule.ps1`: Windowsの定期タスクを登録し、画面を閉じていても30分ごとにWebの接続確認・撮影と起動中Localの撮影を実行する。
 - `src/app/api/apps/web-status/route.ts`: 定期確認の結果をGit管理外のcacheから読み取る。
 - `src/components/hub-sidebar.tsx`: 3つの表示を切り替える共通ナビゲーション。
+- `src/app/settings/page.tsx` / `src/components/bookmark-settings.tsx`: 設定ページでブックマークと所属フォルダーを管理する。
+- `src/components/hub-sidebar.tsx` / `src/lib/bookmarks.ts`: 歯車の設定導線、右側へ展開するフォルダー単位のブックマーク表示・検証。データはブラウザの`localStorage`に保存し、アプリ定義や稼働状態とは分離する。
 - `src/lib/layout/grid.ts`: マス目上の配置、重なり判定、保存データ検証。
 - `src/app/my-layout/page.tsx` / `src/components/my-layout.tsx`: ユーザー配置の編集・表示。
 - `src/app/icons/page.tsx` / `src/components/icon-view.tsx`: アイコンとタイトルの簡易表示。
