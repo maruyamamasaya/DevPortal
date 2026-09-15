@@ -216,8 +216,9 @@ export function DevHub({ apps, initialStatuses, captureMode = false }: DevHubPro
           const status = statusById.get(app.id);
           const isRunning = status?.state === "running";
           const isWeb = app.kind === "web";
-          const previewUrl = captureMode ? undefined : app.previewUrl ?? (isWeb ? `/api/apps/preview/${app.id}?checked=${Date.parse(webStatuses.get(app.id)?.checkedAt ?? "") || 0}` : `/api/apps/preview/${app.id}?checked=${Math.floor(Date.parse(status?.checkedAt ?? "") / 60_000) || 0}`);
-          const isOpenable = isWeb || isRunning;
+          const isTauri = app.kind === "local" && app.launch?.script === "tauri";
+          const previewUrl = captureMode || isTauri ? undefined : app.previewUrl ?? (isWeb ? `/api/apps/preview/${app.id}?checked=${Date.parse(webStatuses.get(app.id)?.checkedAt ?? "") || 0}` : `/api/apps/preview/${app.id}?checked=${Math.floor(Date.parse(status?.checkedAt ?? "") / 60_000) || 0}`);
+          const isOpenable = !isTauri && (isWeb || isRunning);
           return (
             <article className="app-card" key={app.id}>
               <div className="card-accent" data-running={isRunning} data-web={isWeb} />
@@ -268,7 +269,7 @@ export function DevHub({ apps, initialStatuses, captureMode = false }: DevHubPro
                     Open <ArrowIcon />
                   </a>
                 ) : (
-                  <span className="primary-action is-disabled" aria-disabled="true">Open <ArrowIcon /></span>
+                  <span className="primary-action is-disabled" aria-disabled="true">{isTauri ? "Desktop app" : "Open"} <ArrowIcon /></span>
                 )}
                 {app.repositoryUrl ? (
                   <a className="secondary-action" href={app.repositoryUrl} target="_blank" rel="noreferrer">

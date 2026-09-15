@@ -51,7 +51,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
   const { id } = await context.params;
   const app = getAppDefinitions().find((item) => item.id === id);
   if (!app) return new Response(null, { status: 404 });
-  if (app.kind === "local" && app.previewUrl) return new Response(null, { status: 404 });
+  if (app.kind === "local" && (app.previewUrl || app.launch?.script === "tauri")) return new Response(null, { status: 404 });
   const cached = await readCachedPreview(id);
   if (cached) {
     if (Date.now() - cached.updatedAt >= (app.kind === "web" ? MEDIA_TTL_MS : 30 * 60 * 1000)) {

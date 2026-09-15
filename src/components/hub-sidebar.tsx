@@ -76,6 +76,6 @@ export function HubSidebar() {
         <p className="hub-bookmark-copy-feedback" role="status">{copyFeedback?.status === "copied" ? "URLをコピーしました。" : copyFeedback?.status === "failed" ? "コピーできませんでした。" : ""}</p>
       </div>}
     </section>
-    <Link className="hub-settings-link" href="/settings" aria-current={pathname === "/settings" ? "page" : undefined} aria-label="設定を開く" title="設定"><span aria-hidden="true">⚙</span>設定</Link>
+    <Link className="hub-settings-link" href="/settings" aria-current={pathname.startsWith("/settings") ? "page" : undefined} aria-label="設定を開く" title="設定"><span aria-hidden="true">⚙</span>設定</Link>
   </aside>;
 }

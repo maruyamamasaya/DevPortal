@@ -28,15 +28,17 @@
 - `scripts/install-media-schedule.ps1`: Windowsの定期タスクを登録し、画面を閉じていても30分ごとにWebの接続確認・撮影と起動中Localの撮影を実行する。
 - `src/app/api/apps/web-status/route.ts`: 定期確認の結果をGit管理外のcacheから読み取る。
 - `src/components/hub-sidebar.tsx`: 3つの表示を切り替える共通ナビゲーション。
-- `src/app/settings/page.tsx` / `src/components/bookmark-settings.tsx`: 設定ページでブックマークと所属フォルダーを管理する。
+- `src/app/settings/` / `src/components/bookmark-settings.tsx` / `src/components/bookmark-item-settings.tsx`: 設定トップからブックマーク一覧と個別編集へ進み、追加・フォルダー管理・個別の変更を行う。
+- `src/components/theme-settings.tsx`: システム・ライト・ダークの選択をブラウザに保存し、HTMLのテーマ属性で表示を切り替える。
 - `src/components/hub-sidebar.tsx` / `src/lib/bookmarks.ts`: 歯車の設定導線、右側へ展開するフォルダー単位のブックマーク表示・検証。データはブラウザの`localStorage`に保存し、アプリ定義や稼働状態とは分離する。
 - `src/lib/layout/grid.ts`: マス目上の配置、重なり判定、保存データ検証。
 - `src/app/my-layout/page.tsx` / `src/components/my-layout.tsx`: ユーザー配置の編集・表示。
+- `config/widgets.json` / `src/lib/layout/widgets.ts`: 登録済みLocalアプリのウィジェット画面を検証し、アプリのURLから表示先を組み立てる。
 - `src/app/icons/page.tsx` / `src/components/icon-view.tsx`: アイコンとタイトルの簡易表示。
 
 ## Data Flow
 
-マイレイアウトはアプリ定義と初期状態をServerから受け取り、配置座標・サイズのみブラウザの`localStorage`へ保存する。登録アプリの正本は引き続き`apps.json`であり、配置保存にはURLや秘密情報を含めない。将来のウィジェット追加時はブロック対象の種類を明示する拡張を行う。
+マイレイアウトはアプリ定義、ウィジェット定義、初期状態をServerから受け取り、対象IDと配置座標・サイズのみブラウザの`localStorage`へ保存する。登録アプリの正本は`apps.json`、ウィジェットの正本は`widgets.json`。ローカルツールが専用画面を提供すると、起動中のみiframeで表示する。ウィジェットの内部データ取得と更新は提供元ツールの責務とする。
 
 1. Server Componentが`apps.json`を読み込み検証する。
 2. status checkerがLocal Appのportだけへ並列接続する。Web AppのHTTP接続確認はWindows定期タスクが別途実行する。

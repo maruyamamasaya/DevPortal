@@ -4,7 +4,9 @@
 
 Database persistence: Not applicable.
 
-マイレイアウトはブラウザの`localStorage`に`columns`、`rows`と、`appId`・`column`・`row`・`width`・`height`を持つブロック配列を保存する。現在の対象は登録アプリだけ。幅・高さはマス単位で指定でき、重なり・範囲外の保存データは読み込み時に除外する。旧`size`プリセットの保存データも読み込める。
+マイレイアウトはブラウザの`localStorage`に`columns`、`rows`と、`itemId`・`column`・`row`・`width`・`height`を持つブロック配列を保存する。対象IDは`app:<appId>`または`widget:<widgetId>`。幅・高さはマス単位で指定でき、登録がなくなった対象、重なり・範囲外の保存データは読み込み時に除外する。旧`appId`と`size`プリセットの保存データも読み込める。
+
+ウィジェット定義は`config/widgets.json`に`id`、登録済みLocalアプリの`appId`、`name`、絶対パス`path`を登録する。URLは登録アプリのoriginとpathから組み立て、配置保存には含めない。
 
 アプリ定義は人が編集する`config/apps.json`を正本とする。Runtime Statusは都度取得する一時データであり保存しない。v1にDB、migration、retention管理は不要。
 

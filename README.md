@@ -8,6 +8,8 @@ Windowsでは`npm run media:schedule`でユーザーの定期タスクを登録�
 
 サイドバーから「マイレイアウト」と「アイコン表示」に切り替えられます。マイレイアウトは4×4の見本から始まり、アプリを空きマスへ追加、ドラッグ移動、サイズ変更できます。配置は利用中のブラウザに自動保存されます。行は12まで、列は6まで拡張できます。
 
+ローカルツールがウィジェット専用のWeb画面を提供したら、`config/widgets.json`へ `{ "id": "tool-summary", "appId": "登録済みローカルアプリID", "name": "概要", "path": "/widgets/summary" }` を追加します。Hubを再起動するとマイレイアウトの「ウィジェットを配置」に表示されます。ツールが起動中のときだけ枠内に画面を表示します。提供元の画面はiframeでの表示を許可し、枠内で読める表示と更新処理を実装してください。`id`は一意のkebab-case、`path`はそのアプリ内の絶対パスです。
+
 複数のローカル開発アプリの状態をまとめて確認し、ローカル／公開WebアプリやGitHub Repositoryへ移動するための、ローカル開発環境の玄関口です。DB・認証・外部APIを使わず、Hub自体はローカルで動作します。
 
 ## v1
@@ -26,13 +28,13 @@ Windowsでは`npm run media:schedule`でユーザーの定期タスクを登録�
 - 手動Refresh、名前検索、カテゴリフィルター
 - RunningアプリとGitHub Repositoryを新しいタブで開く
 - 公開WebアプリはWeb Appとして表示し、状態を監視せずOpenで開く
-- OS設定に合わせたライト／ダーク表示
+- OS設定に合わせたライト／ダーク表示。設定からシステム・ライト・ダークを選択可能
 
 ## 起動・停止（v2の最小連携）
 
 登録したローカルアプリのうち`launch`があるカードにはStartが表示されます。ポートが空いている場合だけHubがそのリポジトリで`npm.cmd run`を実行します。アプリの出力はHubを起動したターミナルに流れます。Hubが起動したプロセスにはStopが表示され、Windowsの`taskkill /T /F`でそのプロセスツリーを停止します。Hub以外から起動したアプリはRunningと表示されますが、Stopはできません。Hubを再起動すると起動プロセスの所有情報が失われるため、再起動前にStopしてください。
 
-登録済みポートはLiving Aurora UI `8767`、Command Manager `1420`、MySkill Checker `4321`、MySkill Editor `4174`、GitHub Monitor `3000`です。既定値は各アプリ側で変更していません。MySkill CheckerのAstro 7は`localhost`で待ち受け、AI環境で自動background化するため、Hub起動時だけ`astroForeground`を指定しています。MySkill Editorは先方の環境で`ENOMEM`により起動検証が未完了です。Command Managerはアプリ側の`build.devUrl`とHubの登録ポートがともに`1420`なので、Hubからは`CHEATSHEET_DEV_PORT`だけを渡します。Tauriデスクトップ起動は実機確認済みです。
+登録済みポートはLiving Aurora UI `8767`、Command Manager `1420`、MySkill Checker `4321`、MySkill Editor `4174`、GitHub Monitor `3000`です。既定値は各アプリ側で変更していません。MySkill CheckerのAstro 7は`localhost`で待ち受け、AI環境で自動background化するため、Hub起動時だけ`astroForeground`を指定しています。MySkill Editorは先方の環境で`ENOMEM`により起動検証が未完了です。Command Managerはアプリ側の`build.devUrl`とHubの登録ポートがともに`1420`なので、Hubからは`CHEATSHEET_DEV_PORT`だけを渡します。Tauriの起動プロセスとポート1420の待ち受けを確認済みですが、デスクトップ画面表示は未検証です。
 
 起動設定は以下の形式です。`script`は`dev`、`edit`、`tauri`だけに限定し、ポートは`portEnv`または`portArg`から渡します。Tauriでは`tauriDevUrl`、Astro 7では`astroForeground`も指定できます。Start/StopはこのPCのプロセスを操作するため、Hubは必ず`127.0.0.1`にだけ公開してください。
 

@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="ja">
+      <head><script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('local-dev-hub-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}` }} /></head>
       <body><div className="hub-frame"><HubSidebar /><div className="hub-frame-content">{children}</div></div></body>
     </html>
   );

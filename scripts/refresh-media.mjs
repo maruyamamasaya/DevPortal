@@ -9,7 +9,7 @@ const root = process.cwd();
 const mediaRoot = join(root, ".cache", "media");
 const definitions = JSON.parse(await readFile(join(root, "config", "apps.json"), "utf8"));
 const apps = definitions.filter((app) => app.kind === "web");
-const localApps = definitions.filter((app) => app.kind === "local" && !app.previewUrl);
+const localApps = definitions.filter((app) => app.kind === "local" && !app.previewUrl && app.launch?.script !== "tauri");
 const imageTypes = new Set(["image/png", "image/x-icon", "image/vnd.microsoft.icon", "image/svg+xml", "image/webp", "image/jpeg", "image/gif", "image/avif"]);
 
 function attribute(tag, name) {
