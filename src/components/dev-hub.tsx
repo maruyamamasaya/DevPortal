@@ -130,11 +130,7 @@ export function DevHub({ apps, initialStatuses }: DevHubProps) {
     <main className="shell">
       <header className="hero">
         <div className="brand-row">
-          <div className="brand-mark" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </div>
+          <Image className="brand-mark" src="/icon.svg" alt="" width={58} height={58} />
           <div>
             <p className="eyebrow">LOCAL WORKSPACE</p>
             <h1>Local Dev Hub</h1>
@@ -211,13 +207,14 @@ export function DevHub({ apps, initialStatuses }: DevHubProps) {
           const status = statusById.get(app.id);
           const isRunning = status?.state === "running";
           const isWeb = app.kind === "web";
+          const previewUrl = app.previewUrl ?? (isWeb ? `/api/apps/preview/${app.id}` : undefined);
           const isOpenable = isWeb || isRunning;
           return (
             <article className="app-card" key={app.id}>
               <div className="card-accent" data-running={isRunning} data-web={isWeb} />
               <div className="card-preview" aria-hidden="true">
-                {app.previewUrl && !failedPreviews.includes(app.id) ? (
-                  <Image src={app.previewUrl} alt="" width={250} height={140} unoptimized onError={() => setFailedPreviews((ids) => [...ids, app.id])} />
+                {previewUrl && !failedPreviews.includes(app.id) ? (
+                  <Image src={previewUrl} alt="" width={250} height={140} unoptimized onError={() => setFailedPreviews((ids) => [...ids, app.id])} />
                 ) : (
                   <div className="preview-placeholder"><span>{app.name.slice(0, 1).toUpperCase()}</span><small>Preview unavailable</small></div>
                 )}
@@ -231,7 +228,7 @@ export function DevHub({ apps, initialStatuses }: DevHubProps) {
                 </div>
                 <div className="card-title-row">
                   {isWeb && !failedFavicons.includes(app.id) ? (
-                    <Image className="app-favicon" src={`/api/apps/favicon/${app.id}`} alt="" width={40} height={40} unoptimized onError={() => setFailedFavicons((ids) => [...ids, app.id])} />
+                    <Image className="app-favicon" src={`/api/apps/favicon/${app.id}?v=2`} alt="" width={40} height={40} unoptimized onError={() => setFailedFavicons((ids) => [...ids, app.id])} />
                   ) : (
                     <div className="app-icon" aria-hidden="true">{app.name.slice(0, 1).toUpperCase()}</div>
                   )}

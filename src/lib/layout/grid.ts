@@ -26,7 +26,8 @@ export function readLayout(value: unknown, appIds: Set<string>): GridLayout | nu
   let layout: GridLayout = { columns: candidate.columns!, rows: candidate.rows!, blocks: [] };
   for (const item of candidate.blocks) {
     if (!item || typeof item !== "object" || typeof item.appId !== "string" || !appIds.has(item.appId)) continue;
-    const legacyDimensions = item.size === "1x1" ? { width: 1, height: 1 } : item.size === "3x1" ? { width: 3, height: 1 } : item.size === "2x2" ? { width: 2, height: 2 } : null;
+    const stored = item as LayoutBlock & { size?: string };
+    const legacyDimensions = stored.size === "1x1" ? { width: 1, height: 1 } : stored.size === "3x1" ? { width: 3, height: 1 } : stored.size === "2x2" ? { width: 2, height: 2 } : null;
     const next = placeBlock(layout, { ...item, width: item.width ?? legacyDimensions?.width, height: item.height ?? legacyDimensions?.height });
     if (next) layout = next;
   }

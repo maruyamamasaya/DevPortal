@@ -4,9 +4,11 @@
 
 Database persistence: Not applicable.
 
-マイレイアウトはブラウザの`localStorage`に`columns`、`rows`と、`appId`・`column`・`row`・`size`を持つブロック配列を保存する。現在の対象は登録アプリだけ。1×1、3×1、2×2をサポートし、重なり・範囲外の保存データは読み込み時に除外する。
+マイレイアウトはブラウザの`localStorage`に`columns`、`rows`と、`appId`・`column`・`row`・`width`・`height`を持つブロック配列を保存する。現在の対象は登録アプリだけ。幅・高さはマス単位で指定でき、重なり・範囲外の保存データは読み込み時に除外する。旧`size`プリセットの保存データも読み込める。
 
 アプリ定義は人が編集する`config/apps.json`を正本とする。Runtime Statusは都度取得する一時データであり保存しない。v1にDB、migration、retention管理は不要。
+
+Web AppのファビコンとPNGプレビューはGit管理外の`.cache/media/`へ保存する。ファビコンには画像型・取得元URL・更新時刻のmetadataを付ける。表示時に6時間超なら更新を試み、失敗しても保存済み画像を表示する。
 
 ## App Definition
 

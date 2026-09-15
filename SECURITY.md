@@ -12,11 +12,11 @@ loopback interfaceだけで動く個人用local applicationのためv1では設�
 
 - `apps.json`は起動時に型、必須値、port範囲、重複id・重複local port、起動設定を検証する。
 - status check対象のLocal App URLは`localhost`、`127.0.0.1`、`::1`だけを許可し、外部hostへの任意接続を防ぐ。
-- Web Appは外部HTTPS URLのみ許可し、HubのServerから接続しない。
+- Web Appは外部HTTPS URLのみ許可する。ファビコン取得は登録済みURLと同一origin内だけをたどる。
 
 ## External Services
 
-Serverからの外部アクセスなし。Web Appとrepository URLはユーザー操作でbrowserへ渡すだけで、Serverからアクセスしない。
+Serverは登録済みWeb Appのファビコンとプレビューの取得時だけ外部アクセスする。プレビュー撮影は一時的な未認証browser profileを使い、画像はGit管理外の`.cache/media/`に保存する。Repository URLはユーザー操作でbrowserへ渡すだけで、Serverからアクセスしない。
 
 ## Process Safety
 

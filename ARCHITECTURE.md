@@ -21,7 +21,9 @@
 - `src/lib/apps/process-manager.ts`: Hub所有プロセスだけを扱う一時的な管理表と起動・停止。
 - `src/app/api/apps/process/route.ts`: Originを確認するStart/Stop endpoint。
 - `src/components/dev-hub.tsx`: 検索、filter、status更新、カード表示。
-- `src/app/api/apps/favicon/[id]/route.ts`: 登録済みWeb Appのファビコン取得と6時間のメモリキャッシュ。
+- `src/app/api/apps/favicon/[id]/route.ts`: 登録済みWeb Appのファビコン取得と6時間のファイルキャッシュ。
+- `src/app/api/apps/preview/[id]/route.ts`: 分離したヘッドレスブラウザでWeb Appを撮影してPNGを返す。
+- `src/lib/apps/media-cache.ts` / `scripts/refresh-media.mjs`: `.cache/media/`への保存と一括更新。
 - `src/components/hub-sidebar.tsx`: 3つの表示を切り替える共通ナビゲーション。
 - `src/lib/layout/grid.ts`: マス目上の配置、重なり判定、保存データ検証。
 - `src/app/my-layout/page.tsx` / `src/components/my-layout.tsx`: ユーザー配置の編集・表示。
@@ -39,7 +41,7 @@
 
 ## External Services
 
-Web Appのファビコン取得時だけ、登録済み公開URLと同一originの画像をServerが取得する。Web Appの稼働監視は行わない。GitHub URLはブラウザで開くリンクとしてのみ扱う。
+Web Appのファビコンとプレビュー取得時に限り、登録済み公開URLへServerから接続する。ファビコンのリダイレクトと画像参照は同一originに制限する。プレビューは隔離した未認証Chrome/Edge profileで撮影し、`.cache/media/`に保存する。Web Appの稼働監視は行わない。GitHub URLはブラウザで開くリンクとしてのみ扱う。
 
 ## Deployment
 

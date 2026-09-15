@@ -8,7 +8,8 @@
     "start": "next start -H 127.0.0.1 -p 8790",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "media:refresh": "node scripts/refresh-media.mjs"
   },
   "dependencies": {
     "next": "^16.1.6",

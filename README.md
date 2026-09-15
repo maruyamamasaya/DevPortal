@@ -1,6 +1,6 @@
 # Local Dev Hub
 
-カードのページプレビューは任意です。トップページのスクリーンショットを `public/previews/<app-id>.png` に置き、`config/apps.json` の対象アプリに `"previewUrl": "/previews/<app-id>.png"` を追加すると表示されます。未登録・読み込み失敗時は代替表示になります。Webアプリのファビコンは自動取得し、取得成功分を実行中のServerで6時間キャッシュします。
+Webアプリのファビコンとトップページのプレビューは自動取得し、Git管理外の`.cache/media/`に保存します。表示時に6時間を過ぎた画像は更新を試み、失敗しても古い画像を残します。初回取得や一括更新は`npm run media:refresh`でも実行できます。ChromeまたはEdgeが必要です。ログインが必要なサイトのプレビューは未認証のログイン画面になります。Localアプリはトップページ画像を`public/previews/<app-id>.png`に置き、`config/apps.json`に`"previewUrl": "/previews/<app-id>.png"`を追加できます。
 
 ## Local Dev Hubとは
 

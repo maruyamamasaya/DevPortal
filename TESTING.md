@@ -11,6 +11,7 @@
 | app設定・検証 | Unit test、typecheck |
 | status checker・API | typecheck、build、manual verification |
 | UI・CSS | lint、typecheck、build、browser verification |
+| Webメディア取得 | ファビコン・プレビューAPIの画像型、キャッシュ更新、browser verification |
 | 起動script | Windowsでの手動起動 |
 | Start/Stop | 同一Origin API、外部起動アプリのStop拒否、Hub所有アプリの起動・停止を実機確認 |
 
@@ -38,3 +39,6 @@ npm run build
 - 15秒以内の自動更新と手動Refreshが動く。
 - 検索、category filter、Local/Web別のOpen、GitHubのenabled状態を確認する。
 - light / dark、desktop / narrow viewportで読みやすい。
+- マイレイアウトで追加・移動・幅高さ変更・衝突拒否・行列追加・再読み込み後の保存を確認する。
+- アイコン表示と共通サイドバーの切り替えをdesktop / narrow viewportで確認する。
+- Web Appのファビコンとプレビューが画像として表示され、サイト側にファビコンがない場合は頭文字へ戻ることを確認する。
