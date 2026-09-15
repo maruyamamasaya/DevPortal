@@ -21,6 +21,7 @@
 - `src/lib/apps/process-manager.ts`: Hub所有プロセスだけを扱う一時的な管理表と起動・停止。
 - `src/app/api/apps/process/route.ts`: Originを確認するStart/Stop endpoint。
 - `src/components/dev-hub.tsx`: 検索、filter、status更新、カード表示。
+- `src/app/globals.css`: フォルダーパネル開閉時の本文幅と、本文の実幅に応じたカード・マイレイアウトの配置を管理する。
 - `src/app/api/apps/favicon/[id]/route.ts`: 登録済みWeb Appのファビコン取得と6時間のファイルキャッシュ。
 - `src/app/api/apps/preview/[id]/route.ts`: 分離したヘッドレスブラウザでWebと起動中Localを撮影してPNGを返す。停止中Localは保存済み画像を返す。
 - `src/lib/apps/media-cache.ts` / `scripts/refresh-media.mjs`: `.cache/media/`への保存と一括更新。

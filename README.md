@@ -32,7 +32,7 @@ Windowsでは`npm run media:schedule`でユーザーの定期タスクを登録�
 
 登録したローカルアプリのうち`launch`があるカードにはStartが表示されます。ポートが空いている場合だけHubがそのリポジトリで`npm.cmd run`を実行します。アプリの出力はHubを起動したターミナルに流れます。Hubが起動したプロセスにはStopが表示され、Windowsの`taskkill /T /F`でそのプロセスツリーを停止します。Hub以外から起動したアプリはRunningと表示されますが、Stopはできません。Hubを再起動すると起動プロセスの所有情報が失われるため、再起動前にStopしてください。
 
-登録済みポートはLiving Aurora UI `8767`、Command Manager `1420`、MySkill Checker `4321`、MySkill Editor `4174`、GitHub Monitor `3000`です。既定値は各アプリ側で変更していません。MySkill CheckerのAstro 7は`localhost`で待ち受け、AI環境で自動background化するため、Hub起動時だけ`astroForeground`を指定しています。MySkill Editorは先方の環境で`ENOMEM`により起動検証が未完了です。Command ManagerはTauri開発起動時に`CHEATSHEET_DEV_PORT`と`build.devUrl`を同じ番号にしますが、デスクトップ画面の実動作検証は未完了です。
+登録済みポートはLiving Aurora UI `8767`、Command Manager `1420`、MySkill Checker `4321`、MySkill Editor `4174`、GitHub Monitor `3000`です。既定値は各アプリ側で変更していません。MySkill CheckerのAstro 7は`localhost`で待ち受け、AI環境で自動background化するため、Hub起動時だけ`astroForeground`を指定しています。MySkill Editorは先方の環境で`ENOMEM`により起動検証が未完了です。Command Managerはアプリ側の`build.devUrl`とHubの登録ポートがともに`1420`なので、Hubからは`CHEATSHEET_DEV_PORT`だけを渡します。Tauriデスクトップ起動は実機確認済みです。
 
 起動設定は以下の形式です。`script`は`dev`、`edit`、`tauri`だけに限定し、ポートは`portEnv`または`portArg`から渡します。Tauriでは`tauriDevUrl`、Astro 7では`astroForeground`も指定できます。Start/StopはこのPCのプロセスを操作するため、Hubは必ず`127.0.0.1`にだけ公開してください。
 

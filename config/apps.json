@@ -32,7 +32,7 @@
     "port": 1420,
     "localPath": "C:\\Users\\m-maruyama\\Development\\command-manager",
     "repositoryUrl": null,
-    "launch": { "script": "tauri", "portEnv": "CHEATSHEET_DEV_PORT", "tauriDevUrl": true }
+    "launch": { "script": "tauri", "portEnv": "CHEATSHEET_DEV_PORT" }
   },
   {
     "id": "myskill-checker",

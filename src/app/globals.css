@@ -948,10 +948,11 @@ h1 { font-size: clamp(1.85rem, 3vw, 2.4rem); letter-spacing: -0.045em; }
 }
 
 /* Shared navigation and the two alternative views. */
-.hub-frame { display: grid; grid-template-columns: 218px minmax(0, 1fr); min-height: 100vh; }
-.hub-frame-content { min-width: 0; }
+.hub-frame { --hub-sidebar-width: 218px; --hub-panel-width: clamp(240px, 24vw, 330px); display: grid; grid-template-columns: var(--hub-sidebar-width) minmax(0, 1fr); min-height: 100vh; }
+.hub-frame:has(.hub-bookmark-panel) { grid-template-columns: calc(var(--hub-sidebar-width) + var(--hub-panel-width)) minmax(0, 1fr); }
+.hub-frame-content { min-width: 0; container: hub-content / inline-size; }
 .hub-frame-content .shell { width: calc(100% - 40px); padding-top: 36px; }
-.hub-sidebar { position: sticky; top: 0; align-self: start; display: flex; flex-direction: column; min-height: 100vh; padding: 28px 16px; border-right: 1px solid var(--line); background: var(--surface); backdrop-filter: blur(24px); }
+.hub-sidebar { position: sticky; z-index: 30; top: 0; align-self: start; display: flex; flex-direction: column; width: var(--hub-sidebar-width); min-height: 100vh; padding: 28px 16px; border-right: 1px solid var(--line); background: var(--surface); backdrop-filter: blur(24px); }
 .hub-sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 6px 8px 34px; font-size: 0.87rem; font-weight: 750; text-decoration: none; }
 .hub-sidebar-brand small { display: block; margin-top: 4px; color: var(--faint); font-size: 0.56rem; font-weight: 650; letter-spacing: 0.12em; }
 .hub-sidebar-mark { flex: 0 0 auto; width: 31px; height: 31px; border-radius: 9px; }
@@ -971,7 +972,7 @@ h1 { font-size: clamp(1.85rem, 3vw, 2.4rem); letter-spacing: -0.045em; }
 .hub-bookmark-folder-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .hub-bookmark-folder-count { color: var(--faint); font-size: 0.67rem; }
 .hub-bookmark-folder-button > span:last-child { color: var(--faint); font-size: 1.3rem; }
-.hub-bookmark-panel { position: fixed; z-index: 20; top: 0; left: 218px; display: flex; flex-direction: column; width: min(330px, calc(100vw - 218px)); height: 100dvh; padding: 25px 15px; border-right: 1px solid var(--line); background: var(--surface-solid); box-shadow: 16px 0 35px rgba(25, 38, 31, 0.09); }
+.hub-bookmark-panel { position: fixed; z-index: 20; top: 0; left: var(--hub-sidebar-width); display: flex; flex-direction: column; width: var(--hub-panel-width); height: 100dvh; padding: 25px 15px; border-right: 1px solid var(--line); background: var(--surface-solid); box-shadow: 16px 0 35px rgba(25, 38, 31, 0.09); }
 .hub-bookmark-panel-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
 .hub-bookmark-panel-header h3 { overflow: hidden; margin: 0; font-size: 1rem; text-overflow: ellipsis; white-space: nowrap; }
 .hub-bookmark-panel-header button { width: 32px; height: 32px; border: 0; border-radius: 8px; color: var(--muted); background: var(--surface-soft); cursor: pointer; font-size: 1.1rem; }
@@ -1098,3 +1099,36 @@ h1 { font-size: clamp(1.85rem, 3vw, 2.4rem); letter-spacing: -0.045em; }
 @media (max-width: 600px) { .hub-frame-content .shell, .layout-shell, .icons-shell { width: calc(100% - 28px); } }
 @media (max-width: 700px) { .layout-workspace { display: flex; flex-direction: column-reverse; } .layout-main, .layout-sidebar { width: 100%; } .layout-main { overflow-x: visible; } .layout-sidebar { position: static; max-height: none; } .layout-sidebar > p:not(.layout-mobile-help) { display: none; } .layout-mobile-help { display: block; } .layout-app-list { display: flex; overflow-x: auto; } .layout-app-option { flex: 0 0 150px; } .layout-grid { display: flex; flex-direction: column; min-width: 0; } .layout-cell { display: none; } .layout-block { flex: 0 0 auto; min-height: 132px; } .layout-block[data-size="2x2"] { min-height: 280px; } .layout-block[data-size="1x1"] .layout-block-body { align-items: center; flex-direction: row; } .layout-block-inline-preview { width: 80px; height: 56px; } .layout-header, .icons-header { align-items: flex-start; flex-direction: column; } .icons-search, .icons-search input { width: 100%; } }
 @media (max-width: 500px) { .layout-shell, .icons-shell { width: calc(100% - 28px); } .hub-sidebar nav a { gap: 5px; font-size: 0.66rem; } .hub-sidebar nav a span { width: 13px; font-size: 0.86rem; } .layout-toolbar-actions button { padding: 0 7px; } }
+@container hub-content (max-width: 950px) {
+  .summary { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .summary-stat:nth-child(4) { border-right: 0; }
+  .port-summary { grid-column: 1 / -1; min-height: auto; border-top: 1px solid var(--line); }
+  .toolbar { grid-template-columns: minmax(0, 1fr) 200px; }
+  .refresh-area { grid-column: 1 / -1; justify-content: space-between; min-width: 0; }
+  .app-card { grid-template-columns: 210px minmax(0, 1fr); gap: 18px; }
+  .card-preview { width: 210px; height: 126px; }
+  .card-actions { grid-column: 2; flex-direction: row; align-self: auto; }
+  .card-actions > * { width: auto; }
+  .layout-workspace { grid-template-columns: minmax(0, 1fr); }
+  .layout-sidebar { position: static; max-height: none; }
+}
+@container hub-content (max-width: 620px) {
+  .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .summary-stat:nth-child(2) { border-right: 0; }
+  .summary-stat:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+  .toolbar { grid-template-columns: minmax(0, 1fr); }
+  .refresh-area { grid-column: auto; }
+  .app-card { grid-template-columns: minmax(0, 1fr); }
+  .card-preview { width: 100%; height: auto; aspect-ratio: 16 / 9; }
+  .card-actions { grid-column: 1; }
+}
+@media (max-width: 1180px) {
+  .hub-frame:has(.hub-bookmark-panel) { grid-template-columns: minmax(0, 1fr); }
+  .hub-frame:has(.hub-bookmark-panel) .hub-sidebar { position: static; width: 100%; min-height: 0; padding: 10px 16px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .hub-frame:has(.hub-bookmark-panel) .hub-sidebar-brand { display: none; }
+  .hub-frame:has(.hub-bookmark-panel) .hub-sidebar nav { display: flex; justify-content: center; }
+  .hub-frame:has(.hub-bookmark-panel) .hub-bookmarks { margin-top: 10px; padding-top: 10px; }
+  .hub-frame:has(.hub-bookmark-panel) .hub-bookmark-panel { position: static; left: auto; width: 100%; height: min(50vh, 420px); margin-top: 10px; border: 1px solid var(--line); border-radius: 12px; box-shadow: none; }
+  .hub-frame:has(.hub-bookmark-panel) .hub-settings-link { margin-top: 10px; }
+}
+@media (max-width: 900px) { .hub-sidebar { width: 100%; } }

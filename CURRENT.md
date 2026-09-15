@@ -29,6 +29,7 @@ Next.js App Routerで、設定済みローカルアプリの稼働状態と、�
 - アイコン表示ではアイコンとタイトルだけを並べ、起動中LocalとWebを開ける。
 - 歯車から設定ページを開き、ブックマークの追加・タイトル変更・削除とフォルダー管理を行う。サイドバーのフォルダーを選ぶと右側に一覧パネルが開き、タイトル・URL検索、スクロール、各URLのコピーができる。既存の平坦なブックマークは未分類として扱い、保存先はブラウザの`localStorage`。
 - メインのアプリ一覧・マイレイアウト・アイコン表示は固定の最大幅を設けず、画面幅を広く使う。
+- ブックマークフォルダーの一覧パネルを開くと、その幅を本文の配置から差し引き、狭い画面ではパネルをサイドバー内に置いて本文を下へ送る。
 
 ## In Progress
 
@@ -39,7 +40,7 @@ Next.js App Routerで、設定済みローカルアプリの稼働状態と、�
 - TCPポートがaccept状態ならRunningと判定するため、アプリ固有のHTTP healthまでは検証しない。
 - `apps.json`はLocal Dev Hub再起動時に再読込される。
 - Hub再起動後はプロセス所有情報が失われ、以前Hubが起動したプロセスもStopできない。
-- Command ManagerのTauriデスクトップ画面とMySkill Editorの起動は未検証。Living Aurora UI、MySkill Checker閲覧画面、GitHub MonitorのStart/Stopは実機確認済み。
+- MySkill Editorの起動は未検証。Living Aurora UI、MySkill Checker閲覧画面、GitHub MonitorのStart/StopとCommand ManagerのTauriデスクトップ起動は実機確認済み。
 - `tool`はサイト側にファビコンがなく、頭文字を表示する。ログインが必要なWebアプリのサムネイルは未認証のログイン画面になる。
 
 ## Immediate Next
