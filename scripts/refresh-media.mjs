@@ -72,15 +72,31 @@ async function browserPath() {
 const chrome = await browserPath();
 await mkdir(join(mediaRoot, "icons"), { recursive: true });
 await mkdir(join(mediaRoot, "previews"), { recursive: true });
+const observations = [];
 
 for (const app of apps) {
   const url = new URL(app.url);
-  const icon = await findIcon(url);
+  let reachable = false;
+  try {
+    const result = await fetchSameOrigin(url);
+    reachable = Boolean(result && (result.response.status < 500));
+  } catch { /* The site could not be reached. */ }
+  const checkedAt = new Date().toISOString();
+  observations.push({ id: app.id, reachable, checkedAt });
+  if (!reachable) { process.stdout.write(`${app.id}: unreachable; keeping cached images\n`); continue; }
+
+  let iconIsFresh = false;
+  try {
+    const metadata = JSON.parse(await readFile(join(mediaRoot, "icons", `${app.id}.json`), "utf8"));
+    await access(join(mediaRoot, "icons", `${app.id}.bin`));
+    iconIsFresh = metadata.sourceUrl === url.toString() && Date.now() - metadata.updatedAt < 6 * 60 * 60 * 1000;
+  } catch { /* No valid cached icon. */ }
+  const icon = iconIsFresh ? null : await findIcon(url);
   if (icon) {
     await writeFile(join(mediaRoot, "icons", `${app.id}.bin`), icon.bytes);
     await writeFile(join(mediaRoot, "icons", `${app.id}.json`), JSON.stringify({ type: icon.type, sourceUrl: url.toString(), updatedAt: Date.now() }));
     process.stdout.write(`${app.id}: icon ${icon.type}\n`);
-  } else process.stdout.write(`${app.id}: favicon not provided by site\n`);
+  } else if (!iconIsFresh) process.stdout.write(`${app.id}: favicon not provided by site\n`);
 
   if (!chrome) { process.stdout.write(`${app.id}: browser unavailable\n`); continue; }
   const profile = await mkdtemp(join(tmpdir(), "dev-hub-media-"));
@@ -95,3 +111,7 @@ for (const app of apps) {
   } catch (error) { process.stdout.write(`${app.id}: preview failed (${error.message})\n`); }
   finally { await rm(temporary, { force: true }).catch(() => undefined); await rm(profile, { recursive: true, force: true }).catch(() => undefined); }
 }
+const statusPath = join(mediaRoot, "web-status.json");
+const temporaryStatusPath = join(mediaRoot, `web-status-${process.pid}.json`);
+await writeFile(temporaryStatusPath, JSON.stringify(observations));
+await rename(temporaryStatusPath, statusPath);

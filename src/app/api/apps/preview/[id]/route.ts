@@ -52,8 +52,8 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
   const cached = await readCachedPreview(id);
   if (cached) {
     if (Date.now() - cached.updatedAt >= MEDIA_TTL_MS) void capturePreview(id, app.url);
-    return responseFor(cached, Date.now() - cached.updatedAt < MEDIA_TTL_MS ? 21_600 : 300);
+    return responseFor(cached, 60);
   }
   const preview = await capturePreview(id, app.url);
-  return preview ? responseFor(preview, 21_600) : new Response(null, { status: 404, headers: { "Cache-Control": "public, max-age=60" } });
+  return preview ? responseFor(preview, 60) : new Response(null, { status: 404, headers: { "Cache-Control": "public, max-age=60" } });
 }

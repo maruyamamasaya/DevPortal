@@ -22,6 +22,8 @@ Serverは登録済みWeb Appのファビコンとプレビューの取得時だ�
 
 Start/Stop endpointは同一OriginのJSON POSTだけを受け付ける。設定済みの`npm run` scriptと数値portだけを使い、指定directoryで起動する。停止はHubの稼働中セッションが保持するPIDだけをWindowsの`taskkill /T /F`へ渡す。外部から起動済みの同ポートは停止しない。Hub再起動後はPIDを引き継がない。Git操作は行わない。
 
+Webの定期確認・撮影は`apps.json`に登録済みのHTTPS URLだけを対象とする。Windows定期タスクは現在の対話ユーザーで動作し、画面を閉じている間も未認証ブラウザで撮影する。
+
 ## Dependencies
 
 依存関係はNext.js、React、TypeScript、ESLint、Vitestに限定し、`npm audit`と定期更新で確認する。

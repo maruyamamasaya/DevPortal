@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import type { AppDefinition, AppRuntimeStatus, LocalAppDefinition, StatusResponse } from "@/lib/apps/types";
+import { useWebStatus, webStatusLabel } from "./use-web-status";
 
 const REFRESH_INTERVAL_MS = 15_000;
 
@@ -53,9 +54,11 @@ type DevHubProps = {
 };
 
 export function DevHub({ apps, initialStatuses }: DevHubProps) {
+  const webStatuses = useWebStatus();
   const [statuses, setStatuses] = useState(initialStatuses);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
+  const [cardView, setCardView] = useState<"list" | "square">("list");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState(false);
   const [busyAppId, setBusyAppId] = useState<string | null>(null);
@@ -202,12 +205,17 @@ export function DevHub({ apps, initialStatuses }: DevHubProps) {
 
       {actionError && <p className="action-error" role="alert">{actionError}</p>}
 
-      <section className="app-grid">
+      <div className="view-switch" role="group" aria-label="カード表示">
+        <button type="button" aria-pressed={cardView === "list"} onClick={() => setCardView("list")}>1列</button>
+        <button type="button" aria-pressed={cardView === "square"} onClick={() => setCardView("square")}>正方形</button>
+      </div>
+
+      <section className="app-grid" data-view={cardView} aria-label="アプリ一覧">
         {filteredApps.map((app) => {
           const status = statusById.get(app.id);
           const isRunning = status?.state === "running";
           const isWeb = app.kind === "web";
-          const previewUrl = app.previewUrl ?? (isWeb ? `/api/apps/preview/${app.id}` : undefined);
+          const previewUrl = app.previewUrl ?? (isWeb ? `/api/apps/preview/${app.id}?checked=${Date.parse(webStatuses.get(app.id)?.checkedAt ?? "") || 0}` : undefined);
           const isOpenable = isWeb || isRunning;
           return (
             <article className="app-card" key={app.id}>
@@ -222,8 +230,8 @@ export function DevHub({ apps, initialStatuses }: DevHubProps) {
               <div className="card-content">
                 <div className="card-head">
                   <span className="category-badge">{app.category}</span>
-                  <span className={isWeb ? "status-badge is-web" : isRunning ? "status-badge is-running" : "status-badge"}>
-                    <i />{isWeb ? "Web App" : isRunning ? "Running" : "Stopped"}
+                  <span className={isWeb ? `status-badge is-web ${webStatusLabel(webStatuses.get(app.id)) === "接続不可" ? "is-unreachable" : ""}` : isRunning ? "status-badge is-running" : "status-badge"} title={isWeb && webStatuses.get(app.id) ? `最終確認: ${new Date(webStatuses.get(app.id)!.checkedAt).toLocaleString("ja-JP")}` : undefined}>
+                    <i />{isWeb ? webStatusLabel(webStatuses.get(app.id)) : isRunning ? "Running" : "Stopped"}
                   </span>
                 </div>
                 <div className="card-title-row">

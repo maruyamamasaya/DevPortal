@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "media:refresh": "node scripts/refresh-media.mjs"
+    "media:refresh": "node scripts/refresh-media.mjs",
+    "media:schedule": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-media-schedule.ps1"
   },
   "dependencies": {
     "next": "^16.1.6",

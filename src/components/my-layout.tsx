@@ -6,6 +6,7 @@ import type { CSSProperties, DragEvent } from "react";
 import type { AppDefinition, AppRuntimeStatus, StatusResponse } from "@/lib/apps/types";
 import { canPlace, placeBlock, readLayout, starterLayout, updateBlock } from "@/lib/layout/grid";
 import type { GridLayout, LayoutBlock } from "@/lib/layout/grid";
+import { useWebStatus, webStatusLabel } from "./use-web-status";
 
 const STORAGE_KEY = "local-dev-hub:my-layout:v1";
 const PRESET_SIZES = [{ width: 1, height: 1 }, { width: 3, height: 1 }, { width: 2, height: 2 }];
@@ -13,6 +14,7 @@ const PRESET_SIZES = [{ width: 1, height: 1 }, { width: 3, height: 1 }, { width:
 type Props = { apps: AppDefinition[]; initialStatuses: AppRuntimeStatus[] };
 
 export function MyLayout({ apps, initialStatuses }: Props) {
+  const webStatuses = useWebStatus();
   const [layout, setLayout] = useState<GridLayout>(() => starterLayout(apps.map((app) => app.id)));
   const [loaded, setLoaded] = useState(false);
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
@@ -129,10 +131,10 @@ export function MyLayout({ apps, initialStatuses }: Props) {
               const app = appById.get(block.appId);
               if (!app) return null;
               const isOpenable = app.kind === "web" || statusById.get(app.id)?.state === "running";
-              const previewUrl = app.previewUrl ?? (app.kind === "web" ? `/api/apps/preview/${app.id}` : undefined);
+              const previewUrl = app.previewUrl ?? (app.kind === "web" ? `/api/apps/preview/${app.id}?checked=${Date.parse(webStatuses.get(app.id)?.checkedAt ?? "") || 0}` : undefined);
               const isSelected = selectedAppId === app.id;
               return <article key={app.id} className="layout-block" data-size={`${block.width}x${block.height}`} data-selected={isSelected} style={{ gridColumn: `${block.column} / span ${block.width}`, gridRow: `${block.row} / span ${block.height}` }} draggable onDragStart={(event) => { event.dataTransfer.setData("text/plain", app.id); setSelectedAppId(app.id); }} onClick={() => setSelectedAppId(app.id)}>
-                <div className="layout-block-top"><span className="layout-block-kind">{app.kind === "web" ? "WEB" : statusById.get(app.id)?.state === "running" ? "RUNNING" : "STOPPED"}</span><span className="layout-drag-hint" aria-hidden="true">⠿</span></div>
+                <div className="layout-block-top"><span className="layout-block-kind" data-unreachable={app.kind === "web" && webStatusLabel(webStatuses.get(app.id)) === "接続不可"} title={app.kind === "web" && webStatuses.get(app.id) ? `最終確認: ${new Date(webStatuses.get(app.id)!.checkedAt).toLocaleString("ja-JP")}` : undefined}>{app.kind === "web" ? webStatusLabel(webStatuses.get(app.id)) : statusById.get(app.id)?.state === "running" ? "RUNNING" : "STOPPED"}</span><span className="layout-drag-hint" aria-hidden="true">⠿</span></div>
                 {block.width >= 2 && block.height >= 2 && (previewUrl && !failedImages.includes(app.id) ? <Image className="layout-block-preview" src={previewUrl} alt="" width={320} height={180} unoptimized onError={() => setFailedImages((ids) => [...ids, app.id])} /> : <div className="layout-block-preview-placeholder" aria-hidden="true"><div><span /><span /><span /></div><strong>{app.name.slice(0, 1).toUpperCase()}</strong><small>プレビュー未登録</small></div>)}
                 <div className="layout-block-body">{block.width >= 3 && block.height === 1 && previewUrl && !failedImages.includes(app.id) ? <Image className="layout-block-inline-preview" src={previewUrl} alt="" width={112} height={70} unoptimized onError={() => setFailedImages((ids) => [...ids, app.id])} /> : <span className="layout-block-icon" aria-hidden="true">{app.kind === "web" && !failedFavicons.includes(app.id) ? <Image src={`/api/apps/favicon/${app.id}?v=2`} alt="" width={26} height={26} unoptimized onError={() => setFailedFavicons((ids) => [...ids, app.id])} /> : app.name.slice(0, 1).toUpperCase()}</span>}<div><h2>{app.name}</h2><p>{app.description}</p></div></div>
                 <div className="layout-block-bottom"><span>{block.width}×{block.height}</span>{isOpenable ? <a href={app.url} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>開く ↗</a> : <span>停止中</span>}</div>

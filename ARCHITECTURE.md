@@ -24,6 +24,8 @@
 - `src/app/api/apps/favicon/[id]/route.ts`: 登録済みWeb Appのファビコン取得と6時間のファイルキャッシュ。
 - `src/app/api/apps/preview/[id]/route.ts`: 分離したヘッドレスブラウザでWeb Appを撮影してPNGを返す。
 - `src/lib/apps/media-cache.ts` / `scripts/refresh-media.mjs`: `.cache/media/`への保存と一括更新。
+- `scripts/install-media-schedule.ps1`: Windowsの定期タスクを登録し、画面を閉じていても30分ごとにWebの接続確認・撮影を実行する。
+- `src/app/api/apps/web-status/route.ts`: 定期確認の結果をGit管理外のcacheから読み取る。
 - `src/components/hub-sidebar.tsx`: 3つの表示を切り替える共通ナビゲーション。
 - `src/lib/layout/grid.ts`: マス目上の配置、重なり判定、保存データ検証。
 - `src/app/my-layout/page.tsx` / `src/components/my-layout.tsx`: ユーザー配置の編集・表示。
@@ -34,7 +36,7 @@
 マイレイアウトはアプリ定義と初期状態をServerから受け取り、配置座標・サイズのみブラウザの`localStorage`へ保存する。登録アプリの正本は引き続き`apps.json`であり、配置保存にはURLや秘密情報を含めない。将来のウィジェット追加時はブロック対象の種類を明示する拡張を行う。
 
 1. Server Componentが`apps.json`を読み込み検証する。
-2. status checkerがLocal Appのportだけへ並列接続する。Web Appは接続しない。
+2. status checkerがLocal Appのportだけへ並列接続する。Web AppのHTTP接続確認はWindows定期タスクが別途実行する。
 3. 初期HTMLへアプリ定義とstatusを渡す。
 4. Client Componentが15秒ごと、または手動操作時にstatus endpointを呼ぶ。
 5. endpointがその時点のstatusを再確認して返す。

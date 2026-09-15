@@ -10,6 +10,8 @@ Database persistence: Not applicable.
 
 Web AppのファビコンとPNGプレビューはGit管理外の`.cache/media/`へ保存する。ファビコンには画像型・取得元URL・更新時刻のmetadataを付ける。表示時に6時間超なら更新を試み、失敗しても保存済み画像を表示する。
 
+Web Appの接続確認結果は同じcache内の`web-status.json`に`id`、`reachable`、`checkedAt`を保存する。30分ごとの確認が75分以上途絶えた場合は画面で未確認と表示する。これはHTTP応答の有無を示し、アプリ内部のhealthを保証しない。
+
 ## App Definition
 
 | Field | Type | Required | Description |
@@ -27,6 +29,6 @@ Web AppのファビコンとPNGプレビューはGit管理外の`.cache/media/`�
 
 ## Runtime Status
 
-Local Appのみ`id`、`state`、`checkedAt`、`responseTimeMs`をAPI response内で扱う。Web Appの稼働状態は取得しない。
+Local Appは`id`、`state`、`checkedAt`、`responseTimeMs`をAPI response内で扱う。Web Appは別の接続確認結果をcacheから読み取る。
 
 Hub所有のprocess handleはメモリだけに保持し、Statusには`managed`を付ける。永続化しない。
