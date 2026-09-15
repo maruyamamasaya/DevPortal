@@ -59,7 +59,7 @@ export function DevHub({ apps, initialStatuses, captureMode = false }: DevHubPro
   const [statuses, setStatuses] = useState(initialStatuses);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
-  const [cardView, setCardView] = useState<"list" | "square">("list");
+  const [cardView, setCardView] = useState<"list" | "two-column" | "three-column" | "square">("three-column");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState(false);
   const [busyAppId, setBusyAppId] = useState<string | null>(null);
@@ -110,7 +110,7 @@ export function DevHub({ apps, initialStatuses, captureMode = false }: DevHubPro
     return () => window.clearInterval(timer);
   }, [refreshStatuses]);
 
-  const performAction = async (id: string, action: "start" | "stop") => {
+  const performAction = async (id: string, action: "start" | "stop" | "open-desktop") => {
     setBusyAppId(id);
     setActionError(null);
     try {
@@ -208,6 +208,8 @@ export function DevHub({ apps, initialStatuses, captureMode = false }: DevHubPro
 
       <div className="view-switch" role="group" aria-label="カード表示">
         <button type="button" aria-pressed={cardView === "list"} onClick={() => setCardView("list")}>1列</button>
+        <button type="button" aria-pressed={cardView === "two-column"} onClick={() => setCardView("two-column")}>2列</button>
+        <button type="button" aria-pressed={cardView === "three-column"} onClick={() => setCardView("three-column")}>3列</button>
         <button type="button" aria-pressed={cardView === "square"} onClick={() => setCardView("square")}>正方形</button>
       </div>
 
@@ -264,7 +266,9 @@ export function DevHub({ apps, initialStatuses, captureMode = false }: DevHubPro
                     {busyAppId === app.id ? "Working..." : status?.managed ? "Stop" : "Start"}
                   </button>
                 )}
-                {isOpenable ? (
+                {isTauri && isRunning ? (
+                  <button className="primary-action" type="button" disabled={busyAppId !== null} onClick={() => void performAction(app.id, "open-desktop")}>Desktop app <ArrowIcon /></button>
+                ) : isOpenable ? (
                   <a className="primary-action" href={app.url} target="_blank" rel="noreferrer">
                     Open <ArrowIcon />
                   </a>

@@ -549,7 +549,11 @@ footer i {
   color: white;
   background: var(--green);
   box-shadow: 0 8px 18px rgba(47, 143, 98, 0.2);
+  border: 0;
+  cursor: pointer;
 }
+
+.primary-action:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .primary-action:hover {
   box-shadow: 0 10px 22px rgba(47, 143, 98, 0.27);
@@ -928,6 +932,19 @@ h1 { font-size: clamp(1.85rem, 3vw, 2.4rem); letter-spacing: -0.045em; }
 .view-switch button:hover { border-color: var(--green); }
 .view-switch button[aria-pressed="true"] { border-color: var(--green); color: var(--green); background: var(--green-soft); }
 .view-switch button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+
+.app-grid[data-view="two-column"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.app-grid[data-view="three-column"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.app-grid[data-view="two-column"] .app-card, .app-grid[data-view="three-column"] .app-card { grid-template-columns: minmax(0, 1fr); align-content: start; gap: 14px; }
+.app-grid[data-view="two-column"] .card-preview, .app-grid[data-view="three-column"] .card-preview { width: 100%; height: auto; aspect-ratio: 16 / 9; }
+.app-grid[data-view="two-column"] .card-actions, .app-grid[data-view="three-column"] .card-actions { grid-column: 1; flex-direction: row; flex-wrap: wrap; align-self: auto; }
+.app-grid[data-view="two-column"] .card-actions > *, .app-grid[data-view="three-column"] .card-actions > * { flex: 1 1 104px; width: auto; }
+@container hub-content (max-width: 1080px) {
+  .app-grid[data-view="three-column"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container hub-content (max-width: 720px) {
+  .app-grid[data-view="two-column"], .app-grid[data-view="three-column"] { grid-template-columns: 1fr; }
+}
 
 .app-grid[data-view="square"] { grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); }
 .app-grid[data-view="square"] .app-card { display: flex; flex-direction: column; align-items: stretch; gap: 8px; aspect-ratio: 1; min-height: 0; padding: 10px; }

@@ -175,7 +175,11 @@ export function parseAppDefinitions(value: unknown): AppDefinition[] {
       if (astroForeground && script !== "dev") {
         throw new Error(`apps.json[${index}].launch.astroForeground requires dev.`);
       }
-      launch = { script, ...(portEnv ? { portEnv } : {}), ...(portArg ? { portArg } : {}), ...(tauriDevUrl ? { tauriDevUrl } : {}), ...(astroForeground ? { astroForeground } : {}) };
+      const desktopExecutable = item.launch.desktopExecutable;
+      if (desktopExecutable !== undefined && (script !== "tauri" || typeof desktopExecutable !== "string" || !/^[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*\.exe$/.test(desktopExecutable))) {
+        throw new Error(`apps.json[${index}].launch.desktopExecutable must be a relative Tauri exe path.`);
+      }
+      launch = { script, ...(portEnv ? { portEnv } : {}), ...(portArg ? { portArg } : {}), ...(tauriDevUrl ? { tauriDevUrl } : {}), ...(astroForeground ? { astroForeground } : {}), ...(desktopExecutable ? { desktopExecutable } : {}) };
     }
 
     return {

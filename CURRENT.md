@@ -19,11 +19,12 @@ Next.js App Routerで、設定済みローカルアプリの稼働状態と、�
 - Windows用`start-local-dev-hub.bat`と固定ポート8790。
 - OS設定に追従するライト／ダークUI。設定からシステム・ライト・ダークを選択でき、ブラウザに保存する。
 - 横長カードのページプレビュー枠。Webと起動中Localのトップページを未認証ブラウザで撮影する。Localは`previewUrl`で画像を固定登録することもできる。
-- アプリ一覧の1列表示と正方形カード表示をボタンで切り替えられる。正方形表示の列数は画面幅に合わせて変わる。
+- アプリ一覧は3列表示を初期値とし、画面幅に合わせて2列、1列へ減らす。ボタンで1列・2列・3列表示と正方形カード表示を切り替えられ、正方形表示の列数も画面幅に合わせて変わる。
 - Webアプリのサムネイルと公開済みファビコンを`.cache/media/`へ保存し、6時間経過後に再取得を試みる。失敗時は古い画像を表示する。
 - Windows定期タスクがWebアプリを30分ごとに接続確認・撮影し、起動中Localも撮影する。停止中Localは最後の画像を残す。画面にはWebの最後の確認結果と時刻を表示し、75分を超えた結果は未確認とする。
 - 4製品をローカル登録。MySkillは閲覧／編集の2ポートを別カード化。
 - 設定済みローカルアプリのStart/Stop。Hubが起動したプロセスだけ停止可能。
+- Command ManagerがRunningの間はDesktop appボタンでTauri画面を前面に出し、画面が閉じている場合は開発用exeから再表示する。
 - 共通サイドバーからアプリ一覧・マイレイアウト・アイコン表示を切り替えられる。
 - マイレイアウトは4×4を初期値とし、幅・高さをマス単位で指定するブロックの配置、移動、サイズ変更、行列の拡張をブラウザに保存する。
 - マイレイアウトにLocalアプリのウィジェット登録・配置基盤を追加。`config/widgets.json`から専用画面のパスを登録し、起動中に枠内表示する。提供元ツールの専用画面は未登録。
@@ -41,7 +42,7 @@ Next.js App Routerで、設定済みローカルアプリの稼働状態と、�
 - TCPポートがaccept状態ならRunningと判定するため、アプリ固有のHTTP healthまでは検証しない。
 - `apps.json`はLocal Dev Hub再起動時に再読込される。
 - Hub再起動後はプロセス所有情報が失われ、以前Hubが起動したプロセスもStopできない。
-- MySkill Editorの起動とCommand Managerのデスクトップ画面表示は未検証。Living Aurora UI、MySkill Checker閲覧画面、GitHub MonitorのStart/Stopは実機確認済み。Command ManagerはTauriの起動プロセスとポート1420の待ち受けを確認済み。
+- MySkill Editorの起動とCommand ManagerのDesktop app操作は実機確認待ち。Living Aurora UI、MySkill Checker閲覧画面、GitHub MonitorのStart/Stopは実機確認済み。Command ManagerはTauriの起動プロセスとポート1420の待ち受けを確認済み。
 - `tool`はサイト側にファビコンがなく、頭文字を表示する。ログインが必要なWebアプリのサムネイルは未認証のログイン画面になる。
 
 ## Immediate Next

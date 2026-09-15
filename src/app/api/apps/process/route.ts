@@ -1,5 +1,5 @@
 import { getAppDefinitions } from "@/lib/apps/definitions";
-import { ProcessActionError, startApp, stopApp } from "@/lib/apps/process-manager";
+import { ProcessActionError, openDesktopApp, startApp, stopApp } from "@/lib/apps/process-manager";
 
 export const runtime = "nodejs";
 
@@ -19,13 +19,15 @@ export async function POST(request: Request) {
     return Response.json({ error: "Invalid request." }, { status: 400 });
   }
   const { id, action } = body as Record<string, unknown>;
-  if (typeof id !== "string" || (action !== "start" && action !== "stop")) {
+  if (typeof id !== "string" || (action !== "start" && action !== "stop" && action !== "open-desktop")) {
     return Response.json({ error: "Invalid id or action." }, { status: 400 });
   }
   const app = getAppDefinitions().find((item) => item.id === id);
   if (!app || app.kind !== "local") return Response.json({ error: "Local app not found." }, { status: 404 });
   try {
-    if (action === "start") await startApp(app); else await stopApp(app);
+    if (action === "start") await startApp(app);
+    else if (action === "stop") await stopApp(app);
+    else await openDesktopApp(app);
     return Response.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     if (error instanceof ProcessActionError) return Response.json({ error: error.message }, { status: error.status });

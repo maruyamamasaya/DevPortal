@@ -18,6 +18,7 @@ export type LocalAppDefinition = AppDefinitionBase & {
     portArg?: "-p" | "--port";
     tauriDevUrl?: boolean;
     astroForeground?: boolean;
+    desktopExecutable?: string;
   };
 };
 
